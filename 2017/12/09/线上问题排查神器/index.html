@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Btrace," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="BTrace 是什么BTrace 是检查和解决线上的问题的杀器，BTrace 可以通过编写脚本的方式，获取程序执行过程中的一切信息，并且，注意了，不用重启服务，是的，不用重启服务。写好脚本，直接用命令执行即可，不用动原程序的代码。">
+<meta name="keywords" content="Java,Btrace">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Btrace Java 线上问题排查神器">
+<meta property="og:url" content="http://yoursite.com/2017/12/09/线上问题排查神器/index.html">
+<meta property="og:site_name" content="古时的风筝">
+<meta property="og:description" content="BTrace 是什么BTrace 是检查和解决线上的问题的杀器，BTrace 可以通过编写脚本的方式，获取程序执行过程中的一切信息，并且，注意了，不用重启服务，是的，不用重启服务。写好脚本，直接用命令执行即可，不用动原程序的代码。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-09T14:51:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Btrace Java 线上问题排查神器">
+<meta name="twitter:description" content="BTrace 是什么BTrace 是检查和解决线上的问题的杀器，BTrace 可以通过编写脚本的方式，获取程序执行过程中的一切信息，并且，注意了，不用重启服务，是的，不用重启服务。写好脚本，直接用命令执行即可，不用动原程序的代码。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/09/线上问题排查神器/"/>
+
+
+
+
+
+  <title>Btrace Java 线上问题排查神器 | 古时的风筝</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">古时的风筝</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/09/线上问题排查神器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="风筝">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="古时的风筝">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Btrace Java 线上问题排查神器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-09T22:44:29+08:00">
+                2017-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="BTrace-是什么"><a href="#BTrace-是什么" class="headerlink" title="BTrace 是什么"></a>BTrace 是什么</h2><p>BTrace 是检查和解决线上的问题的杀器，BTrace 可以通过编写脚本的方式，获取程序执行过程中的一切信息，并且，注意了，不用重启服务，是的，不用重启服务。写好脚本，直接用命令执行即可，不用动原程序的代码。</p>
+<a id="more"></a>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>总体来说，BTrace 是基于动态字节码修改技术(Hotswap)来实现运行时 java 程序的跟踪和替换。大体的原理可以用下面的公式描述：<br><code>Client(Java compile api + attach api) + Agent（脚本解析引擎 + ASM + JDK6 Instumentation） + Socket</code><br>其实 BTrace 就是使用了 java attach api 附加 agent.jar ，然后使用脚本解析引擎+asm来重写指定类的字节码，再使用 instrument 实现对原有类的替换。</p>
+<h2 id="安装和配置"><a href="#安装和配置" class="headerlink" title="安装和配置"></a>安装和配置</h2><p>本次安装和配置在 Linux Ubuntu 14.04 下进行。目前 BTrace 的最新版本为 1.3.9，代码托管在 [github] 上。<br>第一步，在<a href="https://github.com/btraceio/btrace/releases/tag/v1.3.9" target="_blank" rel="noopener">github</a> 上下载 releases 版 btrace-bin-1.3.9.tgz，zip 版的没有 build 目录。<br>第二步，解压 btrace-bin-1.3.9.tgz 到一个目录即可，例如 <code>/home/fengzheng/soft/btrace</code> , 到这一步其实就可以用了，只是执行脚本的时候需要在 btrace 命令前加上绝对路径，如果想在任意目录可执行，进行下一步<br>第三步，配置环境变量，配置的环境变量包括 <code>JAVA_HOME</code>和 <code>BTRACE_HOME</code> ，例如我的配置如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/home/fengzheng/soft/jdk1.8.0_111</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=.:$&#123;JAVA_HOME&#125;/lib:$&#123;JRE_HOME&#125;/lib  </span><br><span class="line">export PATH=$&#123;JAVA_HOME&#125;/bin:$PATH</span><br><span class="line">export BTRACE_HOME=/home/fengzheng/soft/btrace</span><br><span class="line">export PATH=$PATH:$BTRACE_HOME/bin</span><br></pre></td></tr></table></figure>
+<p>之后执行命令 <code>source /etc/profile</code> ，使环境变量立即生效。接下来在任意目录执行 <code>btrace</code>命令，都可以执行成功了。</p>
+<h2 id="简单测试用例"><a href="#简单测试用例" class="headerlink" title="简单测试用例"></a>简单测试用例</h2><p>btrace 最简单的语法是 <code>btrace $pid script.java</code>，所以需要知道要探测的 <code>Java</code>程序的进程id，然后编写一个探测脚本即可。</p>
+<ul>
+<li><p>写一个常驻内存的 <code>Java</code> 程序，这里写了一个无限循环，每隔5秒钟输出一组计算结果，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">package kite.lab.utils;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * NumberUtil</span><br><span class="line">   *</span><br><span class="line">   * @author fengzheng</span><br><span class="line">   * @date 2017/2/15</span><br><span class="line">   */</span><br><span class="line">  public class NumberUtil &#123;</span><br><span class="line"></span><br><span class="line">      public int sum()&#123;</span><br><span class="line">          int result = 0;</span><br><span class="line">          for(int i = 0; i&lt; 100; i++)&#123;</span><br><span class="line">              result += i * i;</span><br><span class="line">          &#125;</span><br><span class="line">          return result;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      public static void main(String[] args)&#123;</span><br><span class="line">          while (true) &#123;</span><br><span class="line">              Thread.currentThread().setName(&quot;计算&quot;);</span><br><span class="line">              NumberUtil util = new NumberUtil();</span><br><span class="line">              int result = util.sum();</span><br><span class="line">              System.out.println(result);</span><br><span class="line">              try &#123;</span><br><span class="line">                  Thread.sleep(5000);</span><br><span class="line">              &#125;catch (InterruptedException e)&#123;</span><br><span class="line"></span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>顺便说一下命令行编译和运行 Java 的过程：<br><strong>编译</strong>：<code>javac -d  .  NumberUtil.java</code>，定位到 NumberUtil.java 所在目录，然后执行此命令行，将会在当前目录（.表示当前目录）生成包名所示的目录结构，kite/lab/utils/NumberUtil.class<br><strong>执行</strong>：<code>java kite.lab.utils.NumberUtil</code> 即可</p>
+</li>
+</ul>
+<ul>
+<li><p>执行上面的程序后，可用 <code>jps</code> 命令查看 pid(一般情况下用哪个账号启动的程序，就要用哪个账号执行 jps ，root 账号除外)，执行 jps 命令看到如下结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/home/fengzheng/codes/btrace# jps</span><br><span class="line">10906 Jps</span><br><span class="line">10860 NumberUtil</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以看到刚刚执行的 java 进程为 10860</p>
+</li>
+<li><p>编写 btrace 脚本，脚本内容简单如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">package kite;</span><br><span class="line"></span><br><span class="line">import com.sun.btrace.annotations.*;</span><br><span class="line"></span><br><span class="line">import static com.sun.btrace.BTraceUtils.Strings.strcat;</span><br><span class="line">import static com.sun.btrace.BTraceUtils.jstack;</span><br><span class="line">import static com.sun.btrace.BTraceUtils.println;</span><br><span class="line">import static com.sun.btrace.BTraceUtils.str;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * NumberUtilBTrace</span><br><span class="line"> *</span><br><span class="line"> * @author fengzheng</span><br><span class="line"> * @date 2017/6/20</span><br><span class="line"> */</span><br><span class="line">@BTrace</span><br><span class="line">public class NumberUtilBTrace &#123;</span><br><span class="line"></span><br><span class="line">    @OnMethod(</span><br><span class="line">            clazz=&quot;kite.lab.utils.NumberUtil&quot;,</span><br><span class="line">            method=&quot;sum&quot;,</span><br><span class="line">            location=@Location(Kind.RETURN)</span><br><span class="line">    )</span><br><span class="line">    public static void func(@Return int result) &#123;</span><br><span class="line">        println(&quot;trace: =======================&quot;);</span><br><span class="line">        println(strcat(&quot;result:&quot;, str(result)));</span><br><span class="line">        jstack();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>意思是在执行结束后（location=@Location(Kind.RETURN) 表示执行结束）输出结果和堆栈信息</p>
+</li>
+<li><p>预编译：执行之前可以用预编译命令检查脚本的正确性，预编译命令为 btracec，它是一个 javac-like 命令，btracec NumberUtilBTrace.java </p>
+</li>
+<li><p>调用命令行执行，btrace 10860 NumberUtilBTrace.java ，(如果要保存到本地文件中，可以使用转向命令 btrace 10860 NumberUtilBTrace.java &gt; mylog.log )打印的信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trace: =======================</span><br><span class="line">result:328350</span><br><span class="line">kite.lab.utils.NumberUtil.sum(NumberUtil.java:16)</span><br><span class="line">kite.lab.utils.NumberUtil.main(NumberUtil.java:27)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>按ctrl + c ，会给出退出提示，再按 1 退出</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2></li>
+</ul>
+<p>BTrace 是一个事后工具，所谓事后工具就是在服务已经上线了，但是发现存在以下问题的时候，可以用 BTrace。</p>
+<ol>
+<li>比如哪些方法执行太慢，例如监控执行时间超过1s的方法</li>
+<li>查看哪些方法调用了 System.gc() ，调用栈是怎样的</li>
+<li>查看方法参数或对象属性</li>
+<li>哪些方法发生了异常</li>
+</ol>
+<p>多说一点，为了更好解决问题，最好还要配合事前准备和进行中监控，事前准备就是埋点嘛，在一些可能出现问题的方法中进行日志输出，进行中监控就是利用一些实时监控工具，例如 VisualVM 、jmc 这些带界面的工具或者 jdk 提供的命令行工具等，再高级一点的就是利用 Graphite 这样的Metrics 工具配合 web 界面展示出来。</p>
+<h2 id="使用限制"><a href="#使用限制" class="headerlink" title="使用限制"></a>使用限制</h2><p>为了保证trace语句只读,最小化对被检测程序造成影响， BTrace对trace脚本有一些限制(比如不能改变被trace代码中的状态) </p>
+<ul>
+<li>BTrace class不能新建类, 新建数组, 抛异常, 捕获异常,</li>
+<li>不能调用实例方法以及静态方法(com.sun.btrace.BTraceUtils除外)</li>
+<li>不能将目标程序和对象赋值给BTrace的实例和静态field</li>
+<li>不能定义外部, 内部, 匿名, 本地类</li>
+<li>不能有同步块和方法</li>
+<li>不能有循环</li>
+<li>不能实现接口, 不能扩展类</li>
+<li>不能使用assert语句, 不能使用class字面值</li>
+</ul>
+<h2 id="拦截方法定义"><a href="#拦截方法定义" class="headerlink" title="拦截方法定义"></a>拦截方法定义</h2><p>@OnMethod 可以指定 clazz 、method、location。由此组成了在什么时机（location 决定）监控某个类/某些类（clazz 决定）下的某个方法/某些方法(method 决定)。</p>
+<h3 id="如何定位"><a href="#如何定位" class="headerlink" title="如何定位"></a>如何定位</h3><ol>
+<li><p>精准定位</p>
+<p>直接定位到一个类下的一个方法，上面测试用的例子就是</p>
+</li>
+<li><p>正则表达式定位</p>
+<p>正则表达式在两个”/“ 之间，例如下面的例子,监控 javax.swing 包下的所有方法，注意正式环境中，范围尽可能小一点，太大了性能会有影响。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@OnMethod(clazz=&quot;/javax\\.swing\\..*/&quot;, method=&quot;/.*/&quot;)</span><br><span class="line">public static void swingMethods( @ProbeClassName String probeClass, @ProbeMethodName String probeMethod) &#123;</span><br><span class="line">   print(&quot;entered &quot; + probeClass + &quot;.&quot;  + probeMethod);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过在拦截函数的定义里注入@ProbeClassName String probeClass, @ProbeMethodName String probeMethod 参数，告诉脚本实际匹配到的类和方法名。</p>
+</li>
+<li><p>按接口或继承类定位</p>
+<p>例如要匹配继承或实现了 com.kite.base 的接口或基类的，只要在类前加上 + 号就可以了，例如</p>
+<p>@OnMethod(clazz=”+com.kite.base”, method=”doSome”)</p>
+</li>
+<li><p>按注解定位</p>
+<p>在前面加上 @ 即可，例如@OnMethod(clazz=”@javax.jws.WebService”, method=”@javax.jws.WebMethod”)</p>
+</li>
+</ol>
+<h3 id="拦截时机"><a href="#拦截时机" class="headerlink" title="拦截时机"></a>拦截时机</h3><p>拦截时机由 location 决定，当然也可为同一个定位加入多个拦截时机，即可以在进入方法时拦截、方法返回时拦截、抛出异常时拦截</p>
+<ol>
+<li><p>Kind.Entry与Kind.Return </p>
+<p>分别表示函数的开始和返回，不写 location 的情况下，默认为 Kind.Entry,仅获取参数值，可以用 Kind.Entry ，要获取返回值或执行时间就要用 Kind.Return  </p>
+</li>
+<li><p>Kind.Error, Kind.Throw和 Kind.Catch</p>
+<p>表示异常被 throw 、异常被捕获还有异常发生但是没有被捕获的情况，在拦截函数的参数定义里注入一个Throwable的参数，代表异常</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@OnMethod(clazz = &quot;java.net.ServerSocket&quot;, method = &quot;bind&quot;, location =@Location(Kind.ERROR))</span><br><span class="line"></span><br><span class="line">public static void onBind(Throwable exception, @Duration long duration)&#123;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Kind.Call 和 Kind.Line</p>
+<p>Kind.Call 表示被监控的方法调用了哪些其他方法，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@OnMethod(clazz = &quot;com.kite&quot;,</span><br><span class="line">            method = &quot;login&quot;,</span><br><span class="line">            location = @Location(value = Kind.CALL, clazz = &quot;/.*/&quot;, method = &quot;/.*/&quot;, where = Where.AFTER))</span><br><span class="line">    public static void onBind(@Self Object self, @TargetInstance Object instance, @TargetMethodOrField String method, @Duration long duration)&#123;</span><br><span class="line">        println(strcat(&quot;self: &quot;, str(self)));</span><br><span class="line">        println(strcat(&quot;instance: &quot;, str(instance)));</span><br><span class="line">        println(strcat(&quot;method: &quot;, str(method)));</span><br><span class="line">        println(strcat(&quot;duration(ms): &quot;, str(duration / 1000000)));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>@Self 表示当前监控的函数所在类，如果是静态类则为空，@TargetInstance 表示函数中调用的方法或属性所在的类，如果是静态方法则为空，@TargetMethodOrField 表示调用的方法或属性，如果要获取执行时间，那么 where 必须设置为  Where.AFTER</p>
+<p>Kind.Line 监测类是否执行到了设置的行数，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@OnMethod(clazz = &quot;com.kite.demo&quot;, location = @Location(value = Kind.LINE, line = 20))</span><br><span class="line">public static void onBind() &#123;</span><br><span class="line"></span><br><span class="line">   println(&quot;执行到第20行&quot;);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="几个例子"><a href="#几个例子" class="headerlink" title="几个例子"></a>几个例子</h2><h4 id="查看谁调用了GC"><a href="#查看谁调用了GC" class="headerlink" title="查看谁调用了GC"></a>查看谁调用了GC</h4> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@OnMethod</span>(clazz = <span class="string">"java.lang.System"</span>, method = <span class="string">"gc"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">onSystemGC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        println(<span class="string">"entered System.gc()"</span>);</span><br><span class="line">        jstack();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="打印耗时超过100ms的方法"><a href="#打印耗时超过100ms的方法" class="headerlink" title="打印耗时超过100ms的方法"></a>打印耗时超过100ms的方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@OnMethod</span>(clazz = <span class="string">"/com\\.kite\\.controller\\..*/"</span>,method = <span class="string">"/.*/"</span>,location = <span class="meta">@Location</span>(Kind.RETURN))</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">slowQuery</span><span class="params">(@ProbeClassName String pcn,@ProbeMethodName String probeMethod, @Duration <span class="keyword">long</span> duration)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(duration &gt; <span class="number">1000000</span> * <span class="number">100</span>)&#123;</span><br><span class="line">           println(strcat(<span class="string">"类："</span>, pcn));</span><br><span class="line">           println(strcat(<span class="string">"方法："</span>, probeMethod));</span><br><span class="line">           println(strcat(<span class="string">"时长："</span>, str(duration / <span class="number">1000000</span>)));</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>BTrace 提供了一系列的 sample, 可到 <a href="https://github.com/btraceio/btrace/tree/master/samples" target="_blank" rel="noopener">github</a> 上查看。</p>
+<h2 id="注意问题"><a href="#注意问题" class="headerlink" title="注意问题"></a>注意问题</h2><p>如果出现 <code>Unable to open socket file: target process not responding or HotSpot VM not loaded</code> 这个问题，可能的原因是执行 BTrace 脚本的用户和 Java 进程运行的用户不是同一个，使用 <code>ps -aux | grep $pid</code>查看一下 Java 进程的执行用户，保证和 BTrace 脚本执行用户相同即可</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/Btrace/" rel="tag"># Btrace</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/09/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">风筝</p>
+              <p class="site-description motion-element" itemprop="description">一个不只是关注技术的技术人的技术博客。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/huzhicheng" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/moonkite/activities" target="_blank" title="ZhiHu">
+                    
+                      <i class="fa fa-fw fa-globe"></i>ZhiHu</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#BTrace-是什么"><span class="nav-number">1.</span> <span class="nav-text"><a href="#BTrace-&#x662F;&#x4EC0;&#x4E48;" class="headerlink" title="BTrace &#x662F;&#x4EC0;&#x4E48;"></a>BTrace &#x662F;&#x4EC0;&#x4E48;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x539F;&#x7406;" class="headerlink" title="&#x539F;&#x7406;"></a>&#x539F;&#x7406;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装和配置"><span class="nav-number">3.</span> <span class="nav-text"><a href="#&#x5B89;&#x88C5;&#x548C;&#x914D;&#x7F6E;" class="headerlink" title="&#x5B89;&#x88C5;&#x548C;&#x914D;&#x7F6E;"></a>&#x5B89;&#x88C5;&#x548C;&#x914D;&#x7F6E;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单测试用例"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x7B80;&#x5355;&#x6D4B;&#x8BD5;&#x7528;&#x4F8B;" class="headerlink" title="&#x7B80;&#x5355;&#x6D4B;&#x8BD5;&#x7528;&#x4F8B;"></a>&#x7B80;&#x5355;&#x6D4B;&#x8BD5;&#x7528;&#x4F8B;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x4F7F;&#x7528;&#x573A;&#x666F;" class="headerlink" title="&#x4F7F;&#x7528;&#x573A;&#x666F;"></a>&#x4F7F;&#x7528;&#x573A;&#x666F;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用限制"><span class="nav-number">6.</span> <span class="nav-text"><a href="#&#x4F7F;&#x7528;&#x9650;&#x5236;" class="headerlink" title="&#x4F7F;&#x7528;&#x9650;&#x5236;"></a>&#x4F7F;&#x7528;&#x9650;&#x5236;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拦截方法定义"><span class="nav-number">7.</span> <span class="nav-text"><a href="#&#x62E6;&#x622A;&#x65B9;&#x6CD5;&#x5B9A;&#x4E49;" class="headerlink" title="&#x62E6;&#x622A;&#x65B9;&#x6CD5;&#x5B9A;&#x4E49;"></a>&#x62E6;&#x622A;&#x65B9;&#x6CD5;&#x5B9A;&#x4E49;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何定位"><span class="nav-number">7.1.</span> <span class="nav-text"><a href="#&#x5982;&#x4F55;&#x5B9A;&#x4F4D;" class="headerlink" title="&#x5982;&#x4F55;&#x5B9A;&#x4F4D;"></a>&#x5982;&#x4F55;&#x5B9A;&#x4F4D;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拦截时机"><span class="nav-number">7.2.</span> <span class="nav-text"><a href="#&#x62E6;&#x622A;&#x65F6;&#x673A;" class="headerlink" title="&#x62E6;&#x622A;&#x65F6;&#x673A;"></a>&#x62E6;&#x622A;&#x65F6;&#x673A;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#几个例子"><span class="nav-number">8.</span> <span class="nav-text"><a href="#&#x51E0;&#x4E2A;&#x4F8B;&#x5B50;" class="headerlink" title="&#x51E0;&#x4E2A;&#x4F8B;&#x5B50;"></a>&#x51E0;&#x4E2A;&#x4F8B;&#x5B50;</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#查看谁调用了GC"><span class="nav-number">8.0.1.</span> <span class="nav-text"><a href="#&#x67E5;&#x770B;&#x8C01;&#x8C03;&#x7528;&#x4E86;GC" class="headerlink" title="&#x67E5;&#x770B;&#x8C01;&#x8C03;&#x7528;&#x4E86;GC"></a>&#x67E5;&#x770B;&#x8C01;&#x8C03;&#x7528;&#x4E86;GC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#打印耗时超过100ms的方法"><span class="nav-number">8.0.2.</span> <span class="nav-text"><a href="#&#x6253;&#x5370;&#x8017;&#x65F6;&#x8D85;&#x8FC7;100ms&#x7684;&#x65B9;&#x6CD5;" class="headerlink" title="&#x6253;&#x5370;&#x8017;&#x65F6;&#x8D85;&#x8FC7;100ms&#x7684;&#x65B9;&#x6CD5;"></a>&#x6253;&#x5370;&#x8017;&#x65F6;&#x8D85;&#x8FC7;100ms&#x7684;&#x65B9;&#x6CD5;</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意问题"><span class="nav-number">9.</span> <span class="nav-text"><a href="#&#x6CE8;&#x610F;&#x95EE;&#x9898;" class="headerlink" title="&#x6CE8;&#x610F;&#x95EE;&#x9898;"></a>&#x6CE8;&#x610F;&#x95EE;&#x9898;</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">风筝</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
