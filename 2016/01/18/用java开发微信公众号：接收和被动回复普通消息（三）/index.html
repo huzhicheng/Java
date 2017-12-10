@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,微信公众号," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="上篇说完了如何接入微信公众号，本文说一下微信公众号的最基本功能：普通消息的接收和回复。说到普通消息，那么什么是微信公众号所定义的普通消息呢，微信开发者文档中提到的接收的普通消息包括如下几类：">
+<meta name="keywords" content="Java,微信公众号">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用java开发微信公众号：接收和被动回复普通消息（三）">
+<meta property="og:url" content="http://yoursite.com/2016/01/18/用java开发微信公众号：接收和被动回复普通消息（三）/index.html">
+<meta property="og:site_name" content="古时的风筝">
+<meta property="og:description" content="上篇说完了如何接入微信公众号，本文说一下微信公众号的最基本功能：普通消息的接收和回复。说到普通消息，那么什么是微信公众号所定义的普通消息呢，微信开发者文档中提到的接收的普通消息包括如下几类：">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
+<meta property="og:updated_time" content="2017-12-10T13:29:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用java开发微信公众号：接收和被动回复普通消息（三）">
+<meta name="twitter:description" content="上篇说完了如何接入微信公众号，本文说一下微信公众号的最基本功能：普通消息的接收和回复。说到普通消息，那么什么是微信公众号所定义的普通消息呢，微信开发者文档中提到的接收的普通消息包括如下几类：">
+<meta name="twitter:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/18/用java开发微信公众号：接收和被动回复普通消息（三）/"/>
+
+
+
+
+
+  <title>用java开发微信公众号：接收和被动回复普通消息（三） | 古时的风筝</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">古时的风筝</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/18/用java开发微信公众号：接收和被动回复普通消息（三）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古时的风筝">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://wx2.sinaimg.cn/small/0070QarDly8fm5qpcu0ljj30hs0hsgmc.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="古时的风筝">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">用java开发微信公众号：接收和被动回复普通消息（三）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-18T21:24:53+08:00">
+                2016-01-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/01/18/用java开发微信公众号：接收和被动回复普通消息（三）/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2016/01/18/用java开发微信公众号：接收和被动回复普通消息（三）/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上篇说完了如何接入微信公众号，本文说一下微信公众号的最基本功能：普通消息的接收和回复。说到普通消息，那么什么是微信公众号所定义的普通消息呢，微信开发者文档中提到的接收的普通消息包括如下几类：</p>
+<a id="more"></a>
+<ol>
+<li>文本消息</li>
+<li>图片消息</li>
+<li>语音消息</li>
+<li>视频消息</li>
+<li>小视频消息</li>
+<li>地理位置消息</li>
+<li>链接消息（被动回复的消息）</li>
+</ol>
+<p>被动回复的普通消息包括：</p>
+<ol>
+<li>回复文本消息</li>
+<li>回复图片消息</li>
+<li>回复语音消息</li>
+<li>回复视频消息</li>
+<li>回复音乐消息</li>
+<li>回复图文消息</li>
+</ol>
+<p>其实接收消息和被动回复消息这两个动作是不分家的，这本来就是一个交互场景，一般情况就是公众号通过分析接收到的消息，会给出对应的回复。当然也不能排除一些特殊业务了。</p>
+<p><strong>如何接收消息</strong></p>
+<p>要接收的这7中消息的xml格式这里就不列出了，请到<a href="http://mp.weixin.qq.com/wiki/17/f298879f8fb29ab98b2f2971d42552fd.html#.E9.93.BE.E6.8E.A5.E6.B6.88.E6.81.AF" target="_blank" rel="noopener">官方文档</a>查看，有具体的格式定义和属性说明。格式很简单，基本共有属性包括ToUserName、FromUserName、CreateTime、MsgType、MsgId，并且每种类型有自己特殊的属性。</p>
+<p>看到这里，其实就很明白了，接收消息的过程其实就是获取post请求的这个xml，然后对这个xml进行分析的过程。post请求的入口还是之前提到的微信公众号接入的那个地址，整个公众号的所有请求都会走这个入口，只是接入时是get请求，其它情况下是post请求。处理xml这里用了dom4j，xml处理代码如下,在servlet的post方法中调用parseXml方法即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Map <span class="title">parseXml</span><span class="params">(HttpServletRequest request)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// 将解析结果存储在HashMap中</span></span><br><span class="line">        Map map = <span class="keyword">new</span> HashMap();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从request中取得输入流</span></span><br><span class="line">        InputStream inputStream = request.getInputStream();</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * 读取request的body内容 此方法会导致流读取问题 Premature end of file. Nested exception:</span></span><br><span class="line"><span class="comment">		 * Premature end of file String requestBody =</span></span><br><span class="line"><span class="comment">		 * inputStream2String(inputStream); System.out.println(requestBody);</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">        <span class="comment">// 读取输入流</span></span><br><span class="line">        SAXReader reader = <span class="keyword">new</span> SAXReader();</span><br><span class="line">        Document document = reader.read(inputStream);</span><br><span class="line">        <span class="comment">// 得到xml根元素</span></span><br><span class="line">        Element root = document.getRootElement();</span><br><span class="line">        <span class="comment">// 得到根元素的所有子节点</span></span><br><span class="line">        List&lt;Element&gt; elementList = root.elements();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历所有子节点</span></span><br><span class="line">        <span class="keyword">for</span> (Element e : elementList)</span><br><span class="line">            map.put(e.getName(), e.getText());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 释放资源</span></span><br><span class="line">        inputStream.close();</span><br><span class="line">        inputStream = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> map;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">inputStream2String</span><span class="params">(InputStream is)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        <span class="keyword">int</span> i = -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> ((i = is.read()) != -<span class="number">1</span>) &#123;</span><br><span class="line">            baos.write(i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> baos.toString();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>如何被动回复消息</strong></p>
+<p>下面我基于这样一个逻辑来演示构造回复的消息，接收到文本消息”文本”，回复文本消息；接收到“图片”，回复图片消息；接收到“语音”，回复语音消息；接收到“视频”，回复视频消息；接收到“音乐”，回复音乐消息；接收到“图文”，回复图文消息。</p>
+<p><strong>以回复文本消息作为说明：</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">xml</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ToUserName</span>&gt;</span>&lt;![CDATA[发消息的人，即订阅者]]&gt;<span class="tag">&lt;/<span class="name">ToUserName</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">FromUserName</span>&gt;</span>&lt;![CDATA[微信公众号本身]]&gt;<span class="tag">&lt;/<span class="name">FromUserName</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">CreateTime</span>&gt;</span>消息创建时间（整形）<span class="tag">&lt;/<span class="name">CreateTime</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">MsgType</span>&gt;</span>&lt;![CDATA[text]]&gt;<span class="tag">&lt;/<span class="name">MsgType</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Content</span>&gt;</span>&lt;![CDATA[消息内容]]&gt;<span class="tag">&lt;/<span class="name">Content</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">xml</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>前两个属性可以从接收的消息中获取，接收的消息格式如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">xml</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ToUserName</span>&gt;</span>&lt;![CDATA[toUser]]&gt;<span class="tag">&lt;/<span class="name">ToUserName</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">FromUserName</span>&gt;</span>&lt;![CDATA[fromUser]]&gt;<span class="tag">&lt;/<span class="name">FromUserName</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">CreateTime</span>&gt;</span>1348831860<span class="tag">&lt;/<span class="name">CreateTime</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">MsgType</span>&gt;</span>&lt;![CDATA[text]]&gt;<span class="tag">&lt;/<span class="name">MsgType</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Content</span>&gt;</span>&lt;![CDATA[this is a text]]&gt;<span class="tag">&lt;/<span class="name">Content</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">MsgId</span>&gt;</span>1234567890123456<span class="tag">&lt;/<span class="name">MsgId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">xml</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>其中接收消息格式中的ToUserName便是回复消息的FromUserName，接收消息格式中的FromUserName便是回复消息的ToUserName。</p>
+<p>CreateTime为消息发送的时间戳。MsgType为消息类型，文本为text。Content为消息内容。</p>
+<p>具体每一种类型消息的回复，就是构造此种类型的xml格式内容，格式大同小异，只是音乐、视频、语音、图文格式相对于文本消息构造的xml内容稍微复杂一点。具体可参考<a href="http://mp.weixin.qq.com/wiki/9/2c15b20a16019ae613d413e30cac8ea1.html" target="_blank" rel="noopener">官方文档</a>。这里不做赘述，相信各位一看便明白。</p>
+<p>同样，接收消息可以参看<a href="http://mp.weixin.qq.com/wiki/17/f298879f8fb29ab98b2f2971d42552fd.html#.E8.A7.86.E9.A2.91.E6.B6.88.E6.81.AF" target="_blank" rel="noopener">这里</a>。</p>
+<p>代码已更新到<a href="https://github.com/huzhicheng/fengzheng_wechat" target="_blank" rel="noopener">github</a></p>
+<blockquote>
+<p><strong>欢迎关注我的公众号「gushidefengzheng」古时的风筝</strong></p>
+</blockquote>
+<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt="img"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/微信公众号/" rel="tag"># 微信公众号</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/11/模拟实现Spring中的注解装配/" rel="next" title="模拟实现Spring中的注解装配">
+                <i class="fa fa-chevron-left"></i> 模拟实现Spring中的注解装配
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/01/docker创建私有仓库/" rel="prev" title="docker创建私有仓库">
+                docker创建私有仓库 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+  
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://wx2.sinaimg.cn/small/0070QarDly8fm5qpcu0ljj30hs0hsgmc.jpg"
+                alt="古时的风筝" />
+            
+              <p class="site-author-name" itemprop="name">古时的风筝</p>
+              <p class="site-description motion-element" itemprop="description">一个不只关注技术的技术人的技术博客。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/huzhicheng" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/moonkite/activities" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古时的风筝</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://moonkite.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2016/01/18/用java开发微信公众号：接收和被动回复普通消息（三）/';
+          this.page.identifier = '2016/01/18/用java开发微信公众号：接收和被动回复普通消息（三）/';
+          this.page.title = '用java开发微信公众号：接收和被动回复普通消息（三）';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://moonkite.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

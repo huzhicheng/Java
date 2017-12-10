@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,微信公众号," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="上一篇说了微信开发的准备工作，准备工作完成之后，就要开始步入正题了。其实微信公众号开发，说白了，就是要构造和发送http或https的请求组成，并根据请求的返回数据做逻辑处理。 今天就来说一说微信开发第一步，公众号接入以及access_token的管理。">
+<meta name="keywords" content="Java,微信公众号">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用java开发微信公众号：公众号接入和access_token管理（二）">
+<meta property="og:url" content="http://yoursite.com/2015/12/08/用java开发微信公众号：公众号接入和access-token管理（二）/index.html">
+<meta property="og:site_name" content="古时的风筝">
+<meta property="og:description" content="上一篇说了微信开发的准备工作，准备工作完成之后，就要开始步入正题了。其实微信公众号开发，说白了，就是要构造和发送http或https的请求组成，并根据请求的返回数据做逻辑处理。 今天就来说一说微信开发第一步，公众号接入以及access_token的管理。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151207215843761-758028441.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151208121513574-1062027880.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151208121851043-1803445805.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151208122038808-527023316.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151208133644105-471826182.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151208143949840-1503934250.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151208145026230-317900956.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151208145106183-1742462408.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
+<meta property="og:updated_time" content="2017-12-10T13:48:35.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用java开发微信公众号：公众号接入和access_token管理（二）">
+<meta name="twitter:description" content="上一篇说了微信开发的准备工作，准备工作完成之后，就要开始步入正题了。其实微信公众号开发，说白了，就是要构造和发送http或https的请求组成，并根据请求的返回数据做逻辑处理。 今天就来说一说微信开发第一步，公众号接入以及access_token的管理。">
+<meta name="twitter:image" content="http://hexo.moonkite.cn/java/273364-20151207215843761-758028441.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/12/08/用java开发微信公众号：公众号接入和access-token管理（二）/"/>
+
+
+
+
+
+  <title>用java开发微信公众号：公众号接入和access_token管理（二） | 古时的风筝</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">古时的风筝</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/12/08/用java开发微信公众号：公众号接入和access-token管理（二）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古时的风筝">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://wx2.sinaimg.cn/small/0070QarDly8fm5qpcu0ljj30hs0hsgmc.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="古时的风筝">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">用java开发微信公众号：公众号接入和access_token管理（二）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-08T21:35:29+08:00">
+                2015-12-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/08/用java开发微信公众号：公众号接入和access-token管理（二）/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2015/12/08/用java开发微信公众号：公众号接入和access-token管理（二）/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="/2015/12/07/用java开发微信公众号：测试公众号与本地测试环境搭建（一）/">上一篇</a>说了微信开发的准备工作，准备工作完成之后，就要开始步入正题了。其实微信公众号开发，说白了，就是要构造和发送http或https的请求组成，并根据请求的返回数据做逻辑处理。</p>
+<p>今天就来说一说微信开发第一步，公众号接入以及access_token的管理。</p>
+<a id="more"></a>
+<h2 id="微信公众号接入"><a href="#微信公众号接入" class="headerlink" title="微信公众号接入"></a>微信公众号接入</h2><p>在微信公众号开发手册上，关于<a href="http://mp.weixin.qq.com/wiki/16/1e87586a83e0e121cc3e808014375b74.html" target="_blank" rel="noopener">公众号接入这一节内容</a>还是写的比较详细的，文档中说接入公众号需要3个步骤，分别是：</p>
+<p>1、填写服务器配置<br>2、验证服务器地址的有效性<br>3、依据接口文档实现业务逻辑</p>
+<p>其实，第3步已经不能算做公众号接入的步骤，而是接入之后，开发人员可以根据微信公众号提供的接口所能做的一些开发。</p>
+<p>第1步中服务器配置包含服务器地址（URL）、Token和EncodingAESKey。</p>
+<p>服务器地址即公众号后台提供业务逻辑的入口地址，目前只支持80端口，之后包括接入验证以及任何其它的操作的请求（例如消息的发送、菜单管理、素材管理等）都要从这个地址进入。接入验证和其它请求的区别就是，接入验证时是get请求，其它时候是post请求；</p>
+<p>Token可由开发者可以任意填写，用作生成签名（该Token会和接口URL中包含的Token进行比对，从而验证安全性）；</p>
+<p>EncodingAESKey由开发者手动填写或随机生成，将用作消息体加解密密钥。本例中全部以未加密的明文消息方式，不涉及此配置项。</p>
+<p>第2步，验证服务器地址的有效性，当点击“提交”按钮后，微信服务器将发送一个http的get请求到刚刚填写的服务器地址，并且携带四个参数：</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151207215843761-758028441.png" alt="img"></p>
+<p>接到请求后，我们需要做如下三步，若确认此次GET请求来自微信服务器，原样返回echostr参数内容，则接入生效，否则接入失败。</p>
+<ol>
+<li>将token、timestamp、nonce三个参数进行字典序排序</li>
+<li>将三个参数字符串拼接成一个字符串进行sha1加密</li>
+<li><p>开发者获得加密后的字符串可与signature对比，标识该请求来源于微信</p>
+<p>代码会说话，以下是我定义的一个入口servlevt,在其中的doGet方法中定义校验方法：</p>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//token</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String token = <span class="string">"fengzheng"</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"开始签名校验"</span>);</span><br><span class="line">    String signature = request.getParameter(<span class="string">"signature"</span>);</span><br><span class="line">    String timestamp = request.getParameter(<span class="string">"timestamp"</span>);</span><br><span class="line">    String nonce = request.getParameter(<span class="string">"nonce"</span>);</span><br><span class="line">    String echostr = request.getParameter(<span class="string">"echostr"</span>);</span><br><span class="line"></span><br><span class="line">    ArrayList&lt;String&gt; array = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">    array.add(signature);</span><br><span class="line">    array.add(timestamp);</span><br><span class="line">    array.add(nonce);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//排序</span></span><br><span class="line">    String sortString = sort(token, timestamp, nonce);</span><br><span class="line">    <span class="comment">//加密</span></span><br><span class="line">    String mytoken = Decript.SHA1(sortString);</span><br><span class="line">    <span class="comment">//校验签名</span></span><br><span class="line">    <span class="keyword">if</span> (mytoken != <span class="keyword">null</span> &amp;&amp; mytoken != <span class="string">""</span> &amp;&amp; mytoken.equals(signature)) &#123;</span><br><span class="line">        System.out.println(<span class="string">"签名校验通过。"</span>);</span><br><span class="line">        response.getWriter().println(echostr); <span class="comment">//如果检验成功输出echostr，微信服务器接收到此输出，才会确认检验完成。</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"签名校验失败。"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 排序方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> token</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> timestamp</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> nonce</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">sort</span><span class="params">(String token, String timestamp, String nonce)</span> </span>&#123;</span><br><span class="line">    String[] strArray = &#123; token, timestamp, nonce &#125;;</span><br><span class="line">    Arrays.sort(strArray);</span><br><span class="line"></span><br><span class="line">    StringBuilder sbuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    <span class="keyword">for</span> (String str : strArray) &#123;</span><br><span class="line">        sbuilder.append(str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> sbuilder.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下代码是加密的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Decript</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">SHA1</span><span class="params">(String decript)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MessageDigest digest = MessageDigest</span><br><span class="line">                    .getInstance(<span class="string">"SHA-1"</span>);</span><br><span class="line">            digest.update(decript.getBytes());</span><br><span class="line">            <span class="keyword">byte</span> messageDigest[] = digest.digest();</span><br><span class="line">            <span class="comment">// Create Hex String</span></span><br><span class="line">            StringBuffer hexString = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            <span class="comment">// 字节数组转换为 十六进制 数</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; messageDigest.length; i++) &#123;</span><br><span class="line">                String shaHex = Integer.toHexString(messageDigest[i] &amp; <span class="number">0xFF</span>);</span><br><span class="line">                <span class="keyword">if</span> (shaHex.length() &lt; <span class="number">2</span>) &#123;</span><br><span class="line">                    hexString.append(<span class="number">0</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                hexString.append(shaHex);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> hexString.toString();</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>servlet映射的xml如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>Start<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.fengzheng.wechat.Start<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>Start<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/wechat<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>　　</p>
+<p>我这里用的是IntelliJ IDEA+tomcat7.0开发,直接启动项目，然后用ngrok将本地8080端口映射到外网。进入微信测试公众号管理界面，在接口配置信息中填入映射的外网地址和token</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151208121513574-1062027880.png" alt="img"></p>
+<p>点击提交按钮，页面会提示配置成功，</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151208121851043-1803445805.png" alt="img"></p>
+<p>会到IDE,看到控制台中输出了信息</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151208122038808-527023316.png" alt="img">　　</p>
+<h2 id="access-token管理"><a href="#access-token管理" class="headerlink" title="access_token管理"></a>access_token管理</h2><p>在将access_token之前，还有两个重要参数需要知晓，这两个参数分别是appID和appsecret，这是在申请公众号的时候自动分配给公众号的，相当于公众号的身份标示，在很多接口中需要这两个参数，接下来在请求access_token的时候就需要这两个参数。</p>
+<p>公众号接入成功之后，接下来就要实现相应的逻辑了。在使用微信公众号接口中，发现有许多请求都需要access_token。access_token是公众号的全局唯一凭证，公众号调用各接口时都需使用access_token。开发者需要进行妥善保存。access_token的存储至少要保留512个字符空间。access_token的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。并且每天调用获取access_token接口的上限是2000次。</p>
+<p>总结以上说明，access_token需要做到以下两点：</p>
+<p>1.因为access_token有2个小时的时效性，要有一个机制保证最长2个小时重新获取一次；</p>
+<p>2.因为接口调用上限每天2000次，所以不能调用太频繁；</p>
+<p>就此，这里采用的方案是这样的，定义一个默认启动的servlet，在init方法中启动一个Thread,这个进程中定义一个无限循环的方法，用来获取access_token，当获取成功后，此进程休眠7000秒，否则休眠3秒钟继续获取。流程图如下：</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151208133644105-471826182.png" alt="img"></p>
+<p>下面正式开始在工程中实现以上思路，因为返回的数据都是json格式，这里会用到阿里的fastjson库，为构造请求和处理请求后的数据序列化和反序列化提供支持。后续的其它接口也会用到。</p>
+<p>1.定义一个AccessToken实体</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccessToken</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getAccessToken</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> accessToken;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAccessToken</span><span class="params">(String accessToken)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.accessToken = accessToken;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getExpiresin</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> expiresin;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setExpiresin</span><span class="params">(<span class="keyword">int</span> expiresin)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.expiresin = expiresin;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String accessToken;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> expiresin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2.定义一个默认启动的servlet，在init方法中启动一个Thread，并在web.xml中将这个servlet设置为默认自启动的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by huzhicheng on 2015/12/8.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@WebServlet</span>(name = <span class="string">"AccessTokenServlet"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccessTokenServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> ServletException </span>&#123;</span><br><span class="line">        TokenThread.appId = getInitParameter(<span class="string">"appid"</span>);  <span class="comment">//获取servlet初始参数appid和appsecret</span></span><br><span class="line">        TokenThread.appSecret = getInitParameter(<span class="string">"appsecret"</span>);</span><br><span class="line">        System.out.println(<span class="string">"appid:"</span>+TokenThread.appId);</span><br><span class="line">        System.out.println(<span class="string">"appSecret:"</span>+TokenThread.appSecret);</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> TokenThread()).start(); <span class="comment">//启动进程</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在web.xml中设置servlet自启动，并设置初始化参数appid和appsecret</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>initAccessTokenServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">            org.fengzheng.wechat.accesstoken.AccessTokenServlet</span><br><span class="line">        <span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>appid<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>your appid<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>appsecret<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>your appsecret<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>0<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>3.定义Thread类，在此类中调用access_token获取接口，并将得到的数据抽象到静态实体，以便在其它地方使用。接口地址为<a href="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=APPID&amp;secret=APPSECRET，其中grant_type固定写为client_credential即可。此请求为https的get请求，返回的数据格式为{&quot;access_token&quot;:&quot;ACCESS_TOKEN&quot;,&quot;expires_in&quot;:7200}。" target="_blank" rel="noopener">https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=APPID&amp;secret=APPSECRET，其中grant_type固定写为client_credential即可。此请求为https的get请求，返回的数据格式为{&quot;access_token&quot;:&quot;ACCESS_TOKEN&quot;,&quot;expires_in&quot;:7200}。</a></p>
+<p>进程类实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSONObject;</span><br><span class="line"><span class="keyword">import</span> org.fengzheng.wechat.common.NetWorkHelper;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by huzhicheng on 2015/11/5.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TokenThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String appId = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String appSecret= <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">　　<span class="comment">//注意是静态的</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> AccessToken accessToken = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                accessToken = <span class="keyword">this</span>.getAccessToken();</span><br><span class="line">                <span class="keyword">if</span>(<span class="keyword">null</span>!=accessToken)&#123;</span><br><span class="line">                    System.out.println(accessToken.getAccessToken());</span><br><span class="line">                    Thread.sleep(<span class="number">7000</span> * <span class="number">1000</span>); <span class="comment">//获取到access_token 休眠7000秒</span></span><br><span class="line"></span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>*<span class="number">3</span>); <span class="comment">//获取的access_token为空 休眠3秒</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                System.out.println(<span class="string">"发生异常："</span>+e.getMessage());</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>*<span class="number">10</span>); <span class="comment">//发生异常休眠1秒</span></span><br><span class="line">                &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取access_token</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> AccessToken <span class="title">getAccessToken</span><span class="params">()</span></span>&#123;</span><br><span class="line">        NetWorkHelper netHelper = <span class="keyword">new</span> NetWorkHelper();</span><br><span class="line">        String Url = String.format(<span class="string">"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=%s&amp;secret=%s"</span>,<span class="keyword">this</span>.appId,<span class="keyword">this</span>.appSecret);</span><br><span class="line">        String result = netHelper.getHttpsResponse(Url,<span class="string">""</span>);</span><br><span class="line">        System.out.println(result);</span><br><span class="line">        <span class="comment">//response.getWriter().println(result);</span></span><br><span class="line">        JSONObject json = JSON.parseObject(result);</span><br><span class="line">        AccessToken token = <span class="keyword">new</span> AccessToken();</span><br><span class="line">        token.setAccessToken(json.getString(<span class="string">"access_token"</span>));</span><br><span class="line">        token.setExpiresin(json.getInteger(<span class="string">"expires_in"</span>));</span><br><span class="line">        <span class="keyword">return</span> token;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中NetWorkHelper中getHttpsResponse方法是请求一个https地址，参数requestMethod为字符串“GET”或者“POST”，传null或者“”默认为get方式。</p>
+<p>实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getHttpsResponse</span><span class="params">(String hsUrl,String requestMethod)</span> </span>&#123;</span><br><span class="line">        URL url;</span><br><span class="line">        InputStream is = <span class="keyword">null</span>;</span><br><span class="line">        String resultData = <span class="string">""</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            url = <span class="keyword">new</span> URL(hsUrl);</span><br><span class="line">            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();</span><br><span class="line">            TrustManager[] tm = &#123;xtm&#125;;</span><br><span class="line"></span><br><span class="line">            SSLContext ctx = SSLContext.getInstance(<span class="string">"TLS"</span>);</span><br><span class="line">            ctx.init(<span class="keyword">null</span>, tm, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">            con.setSSLSocketFactory(ctx.getSocketFactory());</span><br><span class="line">            con.setHostnameVerifier(<span class="keyword">new</span> HostnameVerifier() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">verify</span><span class="params">(String arg0, SSLSession arg1)</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            con.setDoInput(<span class="keyword">true</span>); <span class="comment">//允许输入流，即允许下载</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">//在android中必须将此项设置为false</span></span><br><span class="line">            con.setDoOutput(<span class="keyword">false</span>); <span class="comment">//允许输出流，即允许上传</span></span><br><span class="line">            con.setUseCaches(<span class="keyword">false</span>); <span class="comment">//不使用缓冲</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">null</span>!=requestMethod &amp;&amp; !requestMethod.equals(<span class="string">""</span>)) &#123;</span><br><span class="line">                con.setRequestMethod(requestMethod); <span class="comment">//使用指定的方式</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                con.setRequestMethod(<span class="string">"GET"</span>); <span class="comment">//使用get请求</span></span><br><span class="line">            &#125;</span><br><span class="line">            is = con.getInputStream();   <span class="comment">//获取输入流，此时才真正建立链接</span></span><br><span class="line">            InputStreamReader isr = <span class="keyword">new</span> InputStreamReader(is);</span><br><span class="line">            BufferedReader bufferReader = <span class="keyword">new</span> BufferedReader(isr);</span><br><span class="line">            String inputLine = <span class="string">""</span>;</span><br><span class="line">            <span class="keyword">while</span> ((inputLine = bufferReader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                resultData += inputLine + <span class="string">"\n"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(resultData);</span><br><span class="line"></span><br><span class="line">           </span><br><span class="line">            Certificate[] certs = con.getServerCertificates();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> certNum = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (Certificate cert : certs) &#123;</span><br><span class="line">                X509Certificate xcert = (X509Certificate) cert;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resultData;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">X509TrustManager xtm = <span class="keyword">new</span> X509TrustManager() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> X509Certificate[] getAcceptedIssuers() &#123;</span><br><span class="line">            <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">checkServerTrusted</span><span class="params">(X509Certificate[] arg0, String arg1)</span></span></span><br><span class="line"><span class="function">                <span class="keyword">throws</span> CertificateException </span>&#123;</span><br><span class="line">            <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">checkClientTrusted</span><span class="params">(X509Certificate[] arg0, String arg1)</span></span></span><br><span class="line"><span class="function">                <span class="keyword">throws</span> CertificateException </span>&#123;</span><br><span class="line">            <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure>
+<p>至此代码实现完毕，将项目部署，看到控制台输出如下：</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151208143949840-1503934250.png" alt="img">　　</p>
+<p>为方面看效果，可以把休眠时间设置短一点，比如30秒获取一次，然后将access_token输出。下面做一个测试jsp页面，并把休眠时间设置为30秒，这样过30秒刷新页面，就可以看到变化，顺便演示一下在其它地方如何拿到access_token</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page contentType=<span class="string">"text/html;charset=UTF-8"</span> language=<span class="string">"java"</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"org.fengzheng.wechat.accesstoken.TokenThread"</span> %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;head&gt;</span><br><span class="line">    &lt;title&gt;&lt;/title&gt;</span><br><span class="line">  &lt;/head&gt;</span><br><span class="line">  &lt;body&gt;</span><br><span class="line">  access_token为：&lt;%=TokenThread.accessToken.getAccessToken()%&gt;</span><br><span class="line">  &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>这样在浏览器上浏览这个页面,显示效果如下：</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151208145026230-317900956.png" alt="img"></p>
+<p>30秒后刷新，这个值发生了变化：</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151208145106183-1742462408.png" alt="img">　　</p>
+<p>代码已上传至<a href="https://github.com/huzhicheng/fengzheng_wechat" target="_blank" rel="noopener">github</a>，仓库会随时更新，目前只有本篇所讲的代码。</p>
+<blockquote>
+<p><strong>欢迎关注我的微信公众号：古时的风筝 （gushidefengzheng）</strong></p>
+</blockquote>
+<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/微信公众号/" rel="tag"># 微信公众号</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/07/用java开发微信公众号：测试公众号与本地测试环境搭建（一）/" rel="next" title="用java开发微信公众号：测试公众号与本地测试环境搭建（一）">
+                <i class="fa fa-chevron-left"></i> 用java开发微信公众号：测试公众号与本地测试环境搭建（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/12/11/模拟实现Spring中的注解装配/" rel="prev" title="模拟实现Spring中的注解装配">
+                模拟实现Spring中的注解装配 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+  
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://wx2.sinaimg.cn/small/0070QarDly8fm5qpcu0ljj30hs0hsgmc.jpg"
+                alt="古时的风筝" />
+            
+              <p class="site-author-name" itemprop="name">古时的风筝</p>
+              <p class="site-description motion-element" itemprop="description">一个不只关注技术的技术人的技术博客。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/huzhicheng" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/moonkite/activities" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#微信公众号接入"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x5FAE;&#x4FE1;&#x516C;&#x4F17;&#x53F7;&#x63A5;&#x5165;" class="headerlink" title="&#x5FAE;&#x4FE1;&#x516C;&#x4F17;&#x53F7;&#x63A5;&#x5165;"></a>&#x5FAE;&#x4FE1;&#x516C;&#x4F17;&#x53F7;&#x63A5;&#x5165;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#access-token管理"><span class="nav-number">2.</span> <span class="nav-text"><a href="#access-token&#x7BA1;&#x7406;" class="headerlink" title="access_token&#x7BA1;&#x7406;"></a>access_token&#x7BA1;&#x7406;</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古时的风筝</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://moonkite.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2015/12/08/用java开发微信公众号：公众号接入和access-token管理（二）/';
+          this.page.identifier = '2015/12/08/用java开发微信公众号：公众号接入和access-token管理（二）/';
+          this.page.title = '用java开发微信公众号：公众号接入和access_token管理（二）';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://moonkite.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,Java," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在Spring中，XML文件中的bean配置是实现Spring IOC的核心配置文件，在早版本的Spring中，只能基于XML配置文件，配置各个对象之间的依赖关系。在Spring 2.5以后出现了注解，使用注解结合XML的方式，简化了XML配置的复杂度。">
+<meta name="keywords" content="Spring,Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模拟实现Spring中的注解装配">
+<meta property="og:url" content="http://yoursite.com/2015/12/11/模拟实现Spring中的注解装配/index.html">
+<meta property="og:site_name" content="古时的风筝">
+<meta property="og:description" content="在Spring中，XML文件中的bean配置是实现Spring IOC的核心配置文件，在早版本的Spring中，只能基于XML配置文件，配置各个对象之间的依赖关系。在Spring 2.5以后出现了注解，使用注解结合XML的方式，简化了XML配置的复杂度。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hexo.moonkite.cn/java/273364-20151210234827699-916273692.png">
+<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
+<meta property="og:updated_time" content="2017-12-10T13:34:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模拟实现Spring中的注解装配">
+<meta name="twitter:description" content="在Spring中，XML文件中的bean配置是实现Spring IOC的核心配置文件，在早版本的Spring中，只能基于XML配置文件，配置各个对象之间的依赖关系。在Spring 2.5以后出现了注解，使用注解结合XML的方式，简化了XML配置的复杂度。">
+<meta name="twitter:image" content="http://hexo.moonkite.cn/java/273364-20151210234827699-916273692.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/12/11/模拟实现Spring中的注解装配/"/>
+
+
+
+
+
+  <title>模拟实现Spring中的注解装配 | 古时的风筝</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">古时的风筝</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/12/11/模拟实现Spring中的注解装配/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古时的风筝">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://wx2.sinaimg.cn/small/0070QarDly8fm5qpcu0ljj30hs0hsgmc.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="古时的风筝">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">模拟实现Spring中的注解装配</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-11T21:30:00+08:00">
+                2015-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/11/模拟实现Spring中的注解装配/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2015/12/11/模拟实现Spring中的注解装配/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在Spring中，XML文件中的bean配置是实现Spring IOC的核心配置文件，在早版本的Spring中，只能基于XML配置文件，配置各个对象之间的依赖关系。在Spring 2.5以后出现了注解，使用注解结合XML的方式，简化了XML配置的复杂度。</p>
+<a id="more"></a>
+<p>老版本中纯XML配置实现IOC</p>
+<p>在配置文件中配置如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"userDao"</span> <span class="attr">class</span>=<span class="string">"com.springapp.mvc.dao.UserDao"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"userService"</span> <span class="attr">class</span>=<span class="string">"com.springapp.mvc.service.impl.UserServiceImpl"</span>&gt;</span> </span><br><span class="line">　　<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"userDao"</span> <span class="attr">ref</span>=<span class="string">"userDao"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>UserServiceImpl的实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserServiceImpl</span> <span class="keyword">implements</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserDao <span class="title">getUserDao</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userDao;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUserDao</span><span class="params">(UserDao userDao)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.userDao = userDao;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> UserDao userDao;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">getUserById</span><span class="params">(<span class="keyword">int</span> id)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> userDao.getUserById(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getUserCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userDao.getUserCount();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置的意思是：<property name="userDao" ref="userDao"></property>这行配置是为UserServiceImpl类中的userDao指定userDao这个bean,这样在UserServiceImpl类中调用userDao的方法，其实就是调用com.springapp.mvc.dao.UserDao的方法。</p>
+<p>结合注解的实现方式</p>
+<p>配置文件简化如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"userDao"</span> <span class="attr">class</span>=<span class="string">"com.springapp.mvc.dao.UserDao"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"userService"</span> <span class="attr">class</span>=<span class="string">"com.springapp.mvc.service.impl.UserServiceImpl"</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>UserServiceImpl的实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserServiceImpl</span> <span class="keyword">implements</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserDao userDao;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">getUserById</span><span class="params">(<span class="keyword">int</span> id)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userDao.getUserById(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getUserCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userDao.getUserCount();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>利用@Autowired注解，实现在xml中<property name="userDao" ref="userDao"></property>的配置，从而实现了自动注入。@Autowired自动注入的规则为byType，意思就是按照被注解字段的类型和xml中配置的bean的类型相匹配，即在UserServiceImpl 类中的userDao为UserDao类型，匹配的时候会在所有bean中查找类型同样为UserDao的bean。</p>
+<p>那么既然是按照类型匹配，如果存在两个相同类型的bean呢，这时候，就会启用第二个匹配规则ByName,即根据字段的名字来匹配相同id的bean。如下XML配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"userDao1"</span> <span class="attr">class</span>=<span class="string">"com.springapp.mvc.dao.UserDao"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"userDao2"</span> <span class="attr">class</span>=<span class="string">"com.springapp.mvc.dao.UserDao"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"userService"</span> <span class="attr">class</span>=<span class="string">"com.springapp.mvc.service.impl.UserServiceImpl"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>那么在UserServiceImpl类中应该使用以下这种方式来自动注入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> UserDao userDao1;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> UserDao userDao2;</span><br></pre></td></tr></table></figure>
+<p>这样好像不是很灵活的样子，看起来有些不爽，有没有办法可以指定要匹配的bean呢？没错，是有的。可以使用这样的方式，通过@Autowired和@Qualifier相结合的方式，@Qualifier后跟的参数就是bean的名称：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="meta">@Qualifier</span>(<span class="string">"userDao1"</span>)</span><br><span class="line"><span class="keyword">private</span> UserDao userDao;</span><br></pre></td></tr></table></figure>
+<p>还有更常用的方式，@Resource:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Resource</span>(name = <span class="string">"userDao1"</span>)</span><br><span class="line"><span class="keyword">private</span> UserDao userDao;</span><br></pre></td></tr></table></figure>
+<p>关于注解IOC的内容可以参看<a href="http://www.ibm.com/developerworks/cn/java/j-lo-spring25-ioc/" target="_blank" rel="noopener">这篇文章</a>，写的很详细。</p>
+<p>注解在Spring中的用法讲完了，下面来自己实习一个简单的类，来模拟Spring利用注解实现IOC的原理。</p>
+<p>Spring IOC实现原理</p>
+<p>1.首先Spring根据bean配置文件，收集所有bean的实例；</p>
+<p>2.Spring根据配置文件中的context:component-scan，扫描需要被注入的包（递归包中的所有待注入类）；</p>
+<p>3.扫描待注入类时，判断是否有特定的注解（例如@Autowired、@Resource）,如果有，则进行第4步，注入；</p>
+<p>4.注入：根据注解类型或参数，利用反射，为被注解的字段或属性等设置对应的bean实例。</p>
+<p>以上是我个人理解，可能和Spring真正的实现有些出入。</p>
+<p>模拟利用注解实现注入</p>
+<p>这里要定义一个类似于@Resource的注解，命名为@MyAutowired,定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE,ElementType.FIELD&#125;)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAutowired &#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">name</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">value</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义配置文件：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</span><br><span class="line">&lt;beans xmlns:context=<span class="string">"http://www.springframework.org/schema/context"</span>&gt;</span><br><span class="line">	&lt;context:component-scan id=<span class="string">"test"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"fengzheng.Test"</span>/&gt;</span><br><span class="line">	&lt;bean id="tomoto" class="fengzheng.Tomoto"&gt;&lt;/bean&gt;</span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure>
+<p>其中bean和Spring中bean的定义是一样的，而context:component-scan在Spring是定义属性base-package，之后根据这个属性，扫描这个包下的所有类，这里为做演示，也定义为一个类，之后会根据这个class属性，对这个类进行注入。</p>
+<p>配置文件中的tomoto bean的定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> fengzheng;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tomoto</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">SayHello</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"hello I'm tomoto"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置文件中fengzheng.Test类定义，这个即为要被注入的类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> fengzheng;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> fengzheng.fzAnnotation.MyAutowired;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">	<span class="meta">@MyAutowired</span>(name = <span class="string">"tomoto"</span>)</span><br><span class="line">	<span class="keyword">private</span> Tomoto tomoto; </span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Say</span><span class="params">()</span></span>&#123;</span><br><span class="line">		tomoto.SayHello();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>核心注解分析并实现注入的类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.dom4j.Document;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Element;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.io.SAXReader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> fengzheng.fzAnnotation.MyAutowired;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.stream.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FzClassPathXMLApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//xml配置文件中 bean定义的集合</span></span><br><span class="line">	<span class="keyword">private</span> List&lt;BeanDefine&gt; beanList = <span class="keyword">new</span> ArrayList&lt;BeanDefine&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 存储bean实例和bean的id的对应关系 以便可以根据注解名称找到对应的实例</span></span><br><span class="line">	Map&lt;String, Object&gt; beanInstanceList = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="comment">//xml配置文件中 被扫描类的定义的集合  在Spring框架中 直接扫描一个或多个包</span></span><br><span class="line">	List&lt;ScanDefine&gt; scanList = <span class="keyword">new</span> ArrayList&lt;ScanDefine&gt;();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 存储被扫描的待注入的实体集合</span></span><br><span class="line">	Map&lt;String, Object&gt; annotationInstanceList = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">FzClassPathXMLApplication</span><span class="params">(String xmlName)</span> </span>&#123;</span><br><span class="line">		ReadXml(xmlName);</span><br><span class="line"></span><br><span class="line">		<span class="comment">//实例化所有定义的bean</span></span><br><span class="line">		BeanInstance();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//实例化所有的待注入类</span></span><br><span class="line">		ScanClassInstance();</span><br><span class="line">	</span><br><span class="line">		<span class="comment">//开始根据注解实现依赖注入</span></span><br><span class="line">		InjectAnnotation();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 读取配置文件  收集bean集合和待注入类的集合</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> xmlFileName</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ReadXml</span><span class="params">(String xmlFileName)</span> </span>&#123;</span><br><span class="line">		URL xmlPath = <span class="keyword">this</span>.getClass().getClassLoader().getResource(xmlFileName);</span><br><span class="line">		System.out.println(xmlPath);</span><br><span class="line">		SAXReader reader = <span class="keyword">new</span> SAXReader();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Document dom = reader.read(xmlPath);</span><br><span class="line">			Element root = dom.getRootElement();</span><br><span class="line">			List&lt;Element&gt; iters = root.elements();</span><br><span class="line">			Stream&lt;Element&gt; beans = iters.stream().filter(bean -&gt; bean.getName().equals(<span class="string">"bean"</span>));</span><br><span class="line">			Iterator&lt;Element&gt; iterBeans = beans.iterator();</span><br><span class="line"></span><br><span class="line">			<span class="keyword">while</span> (iterBeans.hasNext()) &#123;</span><br><span class="line">				Element bean = iterBeans.next();</span><br><span class="line">				String id = bean.attributeValue(<span class="string">"id"</span>);</span><br><span class="line">				String clsName = bean.attributeValue(<span class="string">"class"</span>);</span><br><span class="line">				<span class="comment">//System.out.println("id:" + id + "\nclass:" + clsName);</span></span><br><span class="line">				BeanDefine bd = <span class="keyword">new</span> BeanDefine();</span><br><span class="line">				bd.setId(id);</span><br><span class="line">				bd.setClsName(clsName);</span><br><span class="line">				beanList.add(bd);</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			Stream&lt;Element&gt; scanClasses = iters.stream().filter(scan -&gt; scan.getName().equals(<span class="string">"component-scan"</span>));</span><br><span class="line">			<span class="comment">//iters.stream().forEach(scan -&gt; System.out.println(scan.getName()));</span></span><br><span class="line">			Iterator&lt;Element&gt; iterScans = scanClasses.iterator();</span><br><span class="line"></span><br><span class="line">			<span class="keyword">while</span> (iterScans.hasNext()) &#123;</span><br><span class="line">				Element scan = iterScans.next();</span><br><span class="line">				String id = scan.attributeValue(<span class="string">"id"</span>);</span><br><span class="line">				String clsName = scan.attributeValue(<span class="string">"class"</span>);</span><br><span class="line">				ScanDefine sd = <span class="keyword">new</span> ScanDefine();</span><br><span class="line">				sd.setId(id);</span><br><span class="line">				sd.setClassName(clsName);</span><br><span class="line">				scanList.add(sd);</span><br><span class="line">			&#125;</span><br><span class="line">			System.out.println(<span class="string">"scanList.size():"</span>+scanList.size());</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 收集bean实例</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">BeanInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">for</span> (BeanDefine bd : beanList) &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				Object beanInstance = Class.forName(bd.getClsName()).newInstance();</span><br><span class="line">				System.out.println(beanInstance.getClass().getName());</span><br><span class="line">				beanInstanceList.put(bd.getId(), beanInstance);</span><br><span class="line">			&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 收集被扫描的待注入的类的实例</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ScanClassInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">for</span>(ScanDefine sd:scanList)&#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				Object scanInstance = Class.forName(sd.getClassName()).newInstance();</span><br><span class="line">				System.out.println(scanInstance.getClass().getName());</span><br><span class="line">				annotationInstanceList.put(sd.getId(), scanInstance);</span><br><span class="line">			&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 循环遍历待注入的类 </span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">InjectAnnotation</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		Iterator&lt;Map.Entry&lt;String, Object&gt;&gt; iters = annotationInstanceList.entrySet().iterator();</span><br><span class="line">		<span class="keyword">while</span> (iters.hasNext()) &#123;</span><br><span class="line">			Map.Entry&lt;String, Object&gt; iter = iters.next();</span><br><span class="line">			Object scanInstance = iter.getValue();</span><br><span class="line">			InjectField(scanInstance);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 注入：把需要注入类中的注解为MyAutowired的字段 注入bean实例</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> injectClass</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">InjectField</span><span class="params">(Object injectClass)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Field[] fields = injectClass.getClass().getDeclaredFields();</span><br><span class="line">			</span><br><span class="line">			<span class="keyword">for</span> (Field field : fields) &#123;</span><br><span class="line">				</span><br><span class="line">				<span class="keyword">if</span> (field != <span class="keyword">null</span> &amp;&amp; field.isAnnotationPresent(MyAutowired.class)) &#123;</span><br><span class="line">					System.out.println(field.getName());</span><br><span class="line">					MyAutowired myAutowired = field.getAnnotation(MyAutowired.class);</span><br><span class="line">					String beanName = myAutowired.name();</span><br><span class="line">					</span><br><span class="line">					Object value = <span class="keyword">null</span>;</span><br><span class="line">					<span class="keyword">if</span> (beanName != <span class="keyword">null</span> &amp;&amp; !beanName.equals(<span class="string">""</span>)) &#123;</span><br><span class="line">						value = beanInstanceList.get(beanName);</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						Class&lt;?&gt; fType = field.getType();</span><br><span class="line">						<span class="keyword">for</span> (String key : beanInstanceList.keySet()) &#123;</span><br><span class="line">							<span class="keyword">if</span> (fType.isAssignableFrom(beanInstanceList.get(key).getClass())) &#123;</span><br><span class="line">								value = beanInstanceList.get(key);</span><br><span class="line">								<span class="keyword">break</span>;</span><br><span class="line">							&#125;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">					field.set(injectClass, value);</span><br><span class="line">				&#125;</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Object <span class="title">getScan</span><span class="params">(String scanName)</span></span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.annotationInstanceList.get(scanName);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注解处理类中用到的两个实体类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> fengzheng.simpleSpring;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanDefine</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> String id;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String clsName;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getClsName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> clsName;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setClsName</span><span class="params">(String clsName)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.clsName = clsName;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> fengzheng.simpleSpring;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScanDefine</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> String id;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> String className;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getClassName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> className;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setClassName</span><span class="params">(String className)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.className = className;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对这段程序逻辑的解释：</p>
+<p>1.首先通过ReadXml()方法读取配置文件beans.xml,找到其中的bean节点和context:component-scan节点，然后把bean节点实例化为BeanDefine，并加入beanList集合，把component-scan节点实例化为ScanDefine，并加入scanList集合；</p>
+<p>2.通过BeanInstance()方法，把配置文件中的bean都实例化存储到Map集合beanInstanceList中；</p>
+<p>3.通过ScanClassInstance()方法，把配置文件中的component-scan节点（即待注入的类）实例化并处处到Map集合annotationInstanceList中；</p>
+<p>4.通过InjectAnnotation()方法，遍历annotationInstanceList集合，为其中的被@MyAutowired注解的字段赋值（即对应的bean的实例）</p>
+<p>最后调用实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FzClassPathXMLApplication ctx = <span class="keyword">new</span> FzClassPathXMLApplication(<span class="string">"beans.xml"</span>);</span><br><span class="line">Test test =(Test) ctx.getScan(<span class="string">"test"</span>);</span><br><span class="line">test.Say();</span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<p><img src="http://hexo.moonkite.cn/java/273364-20151210234827699-916273692.png" alt="img"></p>
+<blockquote>
+<p><strong>欢迎关注我的微信公众号：古时的风筝 （gushidefengzheng）</strong></p>
+</blockquote>
+<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/08/用java开发微信公众号：公众号接入和access-token管理（二）/" rel="next" title="用java开发微信公众号：公众号接入和access_token管理（二）">
+                <i class="fa fa-chevron-left"></i> 用java开发微信公众号：公众号接入和access_token管理（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/18/用java开发微信公众号：接收和被动回复普通消息（三）/" rel="prev" title="用java开发微信公众号：接收和被动回复普通消息（三）">
+                用java开发微信公众号：接收和被动回复普通消息（三） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+  
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://wx2.sinaimg.cn/small/0070QarDly8fm5qpcu0ljj30hs0hsgmc.jpg"
+                alt="古时的风筝" />
+            
+              <p class="site-author-name" itemprop="name">古时的风筝</p>
+              <p class="site-description motion-element" itemprop="description">一个不只关注技术的技术人的技术博客。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/huzhicheng" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/moonkite/activities" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古时的风筝</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://moonkite.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2015/12/11/模拟实现Spring中的注解装配/';
+          this.page.identifier = '2015/12/11/模拟实现Spring中的注解装配/';
+          this.page.title = '模拟实现Spring中的注解装配';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://moonkite.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
