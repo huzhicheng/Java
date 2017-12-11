@@ -91,8 +91,7 @@
 <meta property="og:image" content="http://hexo.moonkite.cn/ops/redis/273364-20160929150720000-1999293873.jpg">
 <meta property="og:image" content="http://hexo.moonkite.cn/ops/redis/273364-20160929152337688-1332730145.jpg">
 <meta property="og:image" content="http://hexo.moonkite.cn/ops/redis/273364-20160929152449688-978685655.jpg">
-<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
-<meta property="og:updated_time" content="2017-12-10T13:03:32.000Z">
+<meta property="og:updated_time" content="2017-12-11T03:19:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis集群搭建与简单使用">
 <meta name="twitter:description" content="介绍安装环境与版本用两台虚拟机模拟6个节点，一台机器3个节点，创建出3 master、3 salve 环境。 redis 采用 redis-3.2.4 版本。 两台虚拟机都是 CentOS ，一台 CentOS6.5 （IP:192.168.31.245），一台 CentOS7（IP:192.168.31.210） 。">
@@ -403,10 +402,6 @@
 <p>Redis 集群没有并使用传统的一致性哈希来分配数据，而是采用另外一种叫做<code>哈希槽 (hash slot)</code>的方式来分配的。redis cluster 默认分配了 16384 个slot，当我们set一个key 时，会用<code>CRC16</code>算法来取模得到所属的<code>slot</code>，然后将这个key 分到哈希槽区间的节点上，具体算法就是：<code>CRC16(key) % 16384。所以我们在测试的时候看到set 和 get 的时候，直接跳转到了7000端口的节点。</code></p>
 <p>Redis 集群会把数据存在一个 master 节点，然后在这个 master 和其对应的salve 之间进行数据同步。当读取数据时，也根据一致性哈希算法到对应的 master 节点获取数据。只有当一个master 挂掉之后，才会启动一个对应的 salve 节点，充当 master 。</p>
 <p>需要注意的是：必须要<code>3个或以上</code>的主节点，否则在创建集群时会失败，并且当存活的主节点数小于总节点数的一半时，整个集群就无法提供服务了。</p>
-<blockquote>
-<p><strong>欢迎关注我的微信公众号：古时的风筝 （gushidefengzheng）</strong></p>
-</blockquote>
-<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt=""> </p>
 
       
     </div>
@@ -418,7 +413,7 @@
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
     <img id="wechat_subscriber_qcode" src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt="古时的风筝 wechat" style="width: 200px; max-width: 100%;"/>
-    <div>欢迎扫码关注我的个人技术公众号。</div>
+    <div>欢迎扫码关注我的个人技术公众号「古时的风筝」。</div>
 </div>
 
       </div>

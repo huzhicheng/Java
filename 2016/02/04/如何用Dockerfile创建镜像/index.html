@@ -87,12 +87,10 @@
 <meta property="og:site_name" content="古时的风筝">
 <meta property="og:description" content="创建镜像的目的首先说DockerHub或其它一些镜像仓库已经提供了够多的镜像，有最小版本，也有一些安装了mysql、nginx、apache等等第三方软件的版本可以直接拿来使用。虽然已经足够多了，但是有些情况下并不能满足我们的需求，例如需要安装一些比较少用到的第三方软件，这个时候只能先用公共仓库中的镜像，启动容器，然后在容器中按照我们的需求安装软件，修改配置等等操作，之后提交镜像。这些操作在之前的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
-<meta property="og:updated_time" content="2017-12-10T13:22:34.000Z">
+<meta property="og:updated_time" content="2017-12-11T03:18:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何用Dockerfile创建镜像">
 <meta name="twitter:description" content="创建镜像的目的首先说DockerHub或其它一些镜像仓库已经提供了够多的镜像，有最小版本，也有一些安装了mysql、nginx、apache等等第三方软件的版本可以直接拿来使用。虽然已经足够多了，但是有些情况下并不能满足我们的需求，例如需要安装一些比较少用到的第三方软件，这个时候只能先用公共仓库中的镜像，启动容器，然后在容器中按照我们的需求安装软件，修改配置等等操作，之后提交镜像。这些操作在之前的">
-<meta name="twitter:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
 
 
 
@@ -413,10 +411,6 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> this is a test ubuntu 12.04 image dockerfile</span><br><span class="line"><span class="meta">#</span> Author:fengzheng</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> Base image,this must be set as the first line</span><br><span class="line"><span class="meta">#</span>localhost:5000/centos:6.7是我的私有仓库的镜像，可替换为centos:6.7（DockerHub中的镜像）</span><br><span class="line">FROM localhost:5000/centos:6.7</span><br><span class="line"></span><br><span class="line">MAINTAINER fengzheng</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> Commands to update the image</span><br><span class="line"></span><br><span class="line">RUN mkdir /usr/nginx1.9.9</span><br><span class="line">ADD nginx-1.9.9.tar.gz /usr/nginx1.9.9/</span><br><span class="line"><span class="meta">#</span>RUN yum -y install tar</span><br><span class="line"><span class="meta">#</span>RUN tar -zxvf /usr/nginx1.9.9/nginx-1.9.9.tar.gz</span><br><span class="line">RUN cd /etc/yum.repos.d/ &amp;&amp; mv CentOS-Base.repo CentOS-Base.repo.bak</span><br><span class="line">ADD CentOS6-Base-163.repo /etc/yum.repos.d/</span><br><span class="line">RUN cd /etc/yum.repos.d/ &amp;&amp; mv CentOS6-Base-163.repo CentOS-Base.repo \</span><br><span class="line">    &amp;&amp; yum clean all &amp;&amp; yum makecache \</span><br><span class="line">    &amp;&amp; yum -y install gcc \</span><br><span class="line">    &amp;&amp; yum -y install yum install -y pcre-devel \</span><br><span class="line">    &amp;&amp; yum -y install zlib zlib-devel \</span><br><span class="line">    &amp;&amp; yum -y install openssl openssl--devel \</span><br><span class="line">    &amp;&amp; cd /usr/nginx1.9.9/nginx-1.9.9/ &amp;&amp; ./configure &amp;&amp; make &amp;&amp; make install </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span>如果设置daemon off; nginx无法启动</span><br><span class="line"><span class="meta">#</span>RUN echo "\ndaemon off;" &gt;&gt; /etc/nginx/nginx.conf</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> Commands when creating a new container</span><br><span class="line"><span class="meta">#</span> 启动nginx 需进入/usr/local/nginx/sbin 执行./configure</span><br><span class="line">CMD /bin/bash</span><br></pre></td></tr></table></figure>
 <p>最后执行命令”docker build -t nginx-centos:6.7 .”</p>
 <p>其中.表示在当前目录下搜索Dockerfile文件，-t参数指定镜像名称和tag。</p>
-<blockquote>
-<p><strong>欢迎关注我的微信公众号：古时的风筝 （gushidefengzheng）</strong></p>
-</blockquote>
-<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt=""></p>
 
       
     </div>
@@ -428,7 +422,7 @@
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
     <img id="wechat_subscriber_qcode" src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt="古时的风筝 wechat" style="width: 200px; max-width: 100%;"/>
-    <div>欢迎扫码关注我的个人技术公众号。</div>
+    <div>欢迎扫码关注我的个人技术公众号「古时的风筝」。</div>
 </div>
 
       </div>

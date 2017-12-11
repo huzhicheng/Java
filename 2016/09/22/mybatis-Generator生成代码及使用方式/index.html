@@ -88,8 +88,7 @@
 <meta property="og:description" content="为什么要有mybatismybatis 是一个 Java 的 ORM 框架，ORM 的出现就是为了简化开发。最初的开发方式是业务逻辑和数据库查询逻辑是分开的，或者在程序中编写 sql 语句，或者调用 sql 存储过程。这样导致思维需要在语言逻辑和 sql 逻辑之间切换，导致开发效率低下。所以出现了一系列的 ORM 框架，ORM 框架将数据库表和 Java 对象对应起来，当操作数据库时，只需要操作对">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://hexo.moonkite.cn/java/mybatis/273364-20160921181308824-1997763174.jpg">
-<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
-<meta property="og:updated_time" content="2017-12-10T13:03:25.000Z">
+<meta property="og:updated_time" content="2017-12-11T03:19:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mybatis Generator生成代码及使用方式">
 <meta name="twitter:description" content="为什么要有mybatismybatis 是一个 Java 的 ORM 框架，ORM 的出现就是为了简化开发。最初的开发方式是业务逻辑和数据库查询逻辑是分开的，或者在程序中编写 sql 语句，或者调用 sql 存储过程。这样导致思维需要在语言逻辑和 sql 逻辑之间切换，导致开发效率低下。所以出现了一系列的 ORM 框架，ORM 框架将数据库表和 Java 对象对应起来，当操作数据库时，只需要操作对">
@@ -385,10 +384,6 @@
 <p>虽然自动生成代码很方便，但凡事有利即有弊，mybatis generator 没有办法生成表联查（join）功能，只能手动添加。如下实现了a=x and (b=xx or b=xxx)这样的条件拼接。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">AccountExample accountExample = <span class="keyword">new</span> AccountExample();</span><br><span class="line">AccountExample.Criteria criteria = accountExample.createCriteria().andTypeEqualTo(<span class="string">"4"</span>);</span><br><span class="line">criteria.addCriterion(String.format(<span class="string">" (ID=%d or ID=%d) "</span>,<span class="number">34</span>,<span class="number">35</span>));</span><br><span class="line">List&lt;Account&gt; accounts = accountMapper.selectByExample(accountExample);</span><br><span class="line"><span class="keyword">return</span> accounts;</span><br></pre></td></tr></table></figure>
 <p>但是需要修改一点代码，修改 org.mybatis.generator.codegen.mybatis3.model包下的ExampleGenerator的第524行代码，将  method.setVisibility(JavaVisibility.PROTECTED);  改为  method.setVisibility(JavaVisibility.PUBLIC);  </p>
-<blockquote>
-<p><strong>欢迎关注我的微信公众号：古时的风筝 （gushidefengzheng）</strong></p>
-</blockquote>
-<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt=""></p>
 
       
     </div>
@@ -400,7 +395,7 @@
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
     <img id="wechat_subscriber_qcode" src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt="古时的风筝 wechat" style="width: 200px; max-width: 100%;"/>
-    <div>欢迎扫码关注我的个人技术公众号。</div>
+    <div>欢迎扫码关注我的个人技术公众号「古时的风筝」。</div>
 </div>
 
       </div>

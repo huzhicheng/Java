@@ -91,8 +91,7 @@
 <meta property="og:image" content="http://hexo.moonkite.cn/docker/273364-20151203213243689-1320995239.png">
 <meta property="og:image" content="http://hexo.moonkite.cn/docker/273364-20151203210450846-533701548.png">
 <meta property="og:image" content="http://hexo.moonkite.cn/docker/273364-20151203213045455-1573635873.png">
-<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
-<meta property="og:updated_time" content="2017-12-10T13:55:05.000Z">
+<meta property="og:updated_time" content="2017-12-11T03:17:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker+nginx+tomcat7配置简单的负载均衡">
 <meta name="twitter:description" content="本文介绍在Docker上配置简单的负载均衡，宿主机为Ubuntu 14.04.2 LTS，两个CentOS容器，宿主机安装Nginx，两台容器安装tomcat7。结构如下：">
@@ -401,10 +400,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">                listen 80;</span><br><span class="line">                server_name 192.168.1.106;</span><br><span class="line">                location  / &#123;</span><br><span class="line">                        proxy_pass http://blance;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        upstream blance&#123;</span><br><span class="line">                server localhost:3280 weight=5;</span><br><span class="line">                server localhost:3380 weight=5;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
 <p>首先定义一个upstream,设置web服务器的端口映射和权重，之后定义一个server,监听80端口，server_name为192.168.1.106，这是宿主机的ip地址（可配置成域名），“location /” 意思是监听80端口下的所有请求，并使用上面设置的upstream作为代理。</p>
 <p>9.完成以上配置并保存后，在浏览器中访问<a href="http://192.168.1.106/hello.html，并刷新页面，会发现页面有时显示“hello" target="_blank" rel="noopener">http://192.168.1.106/hello.html，并刷新页面，会发现页面有时显示“hello</a> this is 172.17.0.3”，有时显示“hello this is 172.17.0.2”，说明配置成功，这样就完成了一个简单的负载均衡环境的配置。</p>
-<blockquote>
-<p><strong>欢迎关注我的公众号「gushidefengzheng」古时的风筝</strong></p>
-</blockquote>
-<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt="img"></p>
 
       
     </div>
@@ -416,7 +411,7 @@
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
     <img id="wechat_subscriber_qcode" src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt="古时的风筝 wechat" style="width: 200px; max-width: 100%;"/>
-    <div>欢迎扫码关注我的个人技术公众号。</div>
+    <div>欢迎扫码关注我的个人技术公众号「古时的风筝」。</div>
 </div>
 
       </div>

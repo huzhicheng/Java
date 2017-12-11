@@ -87,12 +87,10 @@
 <meta property="og:site_name" content="古时的风筝">
 <meta property="og:description" content="BTrace 是什么BTrace 是检查和解决线上的问题的杀器，BTrace 可以通过编写脚本的方式，获取程序执行过程中的一切信息，并且，注意了，不用重启服务，是的，不用重启服务。写好脚本，直接用命令执行即可，不用动原程序的代码。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
-<meta property="og:updated_time" content="2017-12-10T12:02:11.000Z">
+<meta property="og:updated_time" content="2017-12-11T03:18:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Btrace Java 线上问题排查神器">
 <meta name="twitter:description" content="BTrace 是什么BTrace 是检查和解决线上的问题的杀器，BTrace 可以通过编写脚本的方式，获取程序执行过程中的一切信息，并且，注意了，不用重启服务，是的，不用重启服务。写好脚本，直接用命令执行即可，不用动原程序的代码。">
-<meta name="twitter:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
 
 
 
@@ -444,10 +442,6 @@
 <h4 id="打印耗时超过100ms的方法"><a href="#打印耗时超过100ms的方法" class="headerlink" title="打印耗时超过100ms的方法"></a>打印耗时超过100ms的方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@OnMethod</span>(clazz = <span class="string">"/com\\.kite\\.controller\\..*/"</span>,method = <span class="string">"/.*/"</span>,location = <span class="meta">@Location</span>(Kind.RETURN))</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">slowQuery</span><span class="params">(@ProbeClassName String pcn,@ProbeMethodName String probeMethod, @Duration <span class="keyword">long</span> duration)</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(duration &gt; <span class="number">1000000</span> * <span class="number">100</span>)&#123;</span><br><span class="line">           println(strcat(<span class="string">"类："</span>, pcn));</span><br><span class="line">           println(strcat(<span class="string">"方法："</span>, probeMethod));</span><br><span class="line">           println(strcat(<span class="string">"时长："</span>, str(duration / <span class="number">1000000</span>)));</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
 <p>BTrace 提供了一系列的 sample, 可到 <a href="https://github.com/btraceio/btrace/tree/master/samples" target="_blank" rel="noopener">github</a> 上查看。</p>
 <h2 id="注意问题"><a href="#注意问题" class="headerlink" title="注意问题"></a>注意问题</h2><p>如果出现 <code>Unable to open socket file: target process not responding or HotSpot VM not loaded</code> 这个问题，可能的原因是执行 BTrace 脚本的用户和 Java 进程运行的用户不是同一个，使用 <code>ps -aux | grep $pid</code>查看一下 Java 进程的执行用户，保证和 BTrace 脚本执行用户相同即可</p>
-<blockquote>
-<p><strong>欢迎关注我的微信公众号：古时的风筝 （gushidefengzheng）</strong></p>
-</blockquote>
-<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt=""></p>
 
       
     </div>
@@ -459,7 +453,7 @@
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
     <img id="wechat_subscriber_qcode" src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt="古时的风筝 wechat" style="width: 200px; max-width: 100%;"/>
-    <div>欢迎扫码关注我的个人技术公众号。</div>
+    <div>欢迎扫码关注我的个人技术公众号「古时的风筝」。</div>
 </div>
 
       </div>

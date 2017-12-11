@@ -92,8 +92,7 @@
 <meta property="og:image" content="http://hexo.moonkite.cn/java/springaop/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F.png">
 <meta property="og:image" content="http://hexo.moonkite.cn/java/springaop/DraggedImage-1.png">
 <meta property="og:image" content="http://hexo.moonkite.cn/java/springaop/DraggedImage-2.png">
-<meta property="og:image" content="http://hexo.moonkite.cn/WeChat/wechat-qr.png">
-<meta property="og:updated_time" content="2017-12-10T13:03:56.000Z">
+<meta property="og:updated_time" content="2017-12-11T03:19:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring AOP 和 动态代理技术">
 <meta name="twitter:description" content="AOP 是什么东西首先来说 AOP 并不是 Spring 框架的核心技术之一，AOP 全称 Aspect Orient Programming，即面向切面的编程。其要解决的问题就是在不改变源代码的情况下，实现对逻辑功能的修改。常用的场景包括记录日志、异常处理、性能监控、安全控制（例如拦截器）等，总结起来就是，凡是想对当前功能做变更，但是又不想修改源代码的情况下，都可以考虑是否可以用 AOP 实现。">
@@ -433,10 +432,6 @@
 </ul>
 <p>另外说一下，CGlib 不支持 final 类， CGlib 的执行速度比较快，但是创建速度比较慢，所以如果两种动态代理都适用的场景下，有大量动态代理类创建的场景下，用 JDK 动态代理模式，否则可以用 CGlib 。</p>
 <p>标准的 Spring MVC 框架，一般都是一个服务接口类对应一个实现类，所以根据Spring AOP 的判断逻辑，应该大部分情况下都是使用的 JDK 动态代理模式。当然也可以手动改成 CGlib 模式。</p>
-<blockquote>
-<p><strong>本文首发自我的微信公众号：古时的风筝 （gushidefengzheng）</strong></p>
-</blockquote>
-<p><img src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt=""></p>
 
       
     </div>
@@ -448,7 +443,7 @@
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
     <img id="wechat_subscriber_qcode" src="http://hexo.moonkite.cn/WeChat/wechat-qr.png" alt="古时的风筝 wechat" style="width: 200px; max-width: 100%;"/>
-    <div>欢迎扫码关注我的个人技术公众号。</div>
+    <div>欢迎扫码关注我的个人技术公众号「古时的风筝」。</div>
 </div>
 
       </div>
