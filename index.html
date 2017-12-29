@@ -276,6 +276,277 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.fengzheng.pub/2017/12/29/使用-Jenkins-集成部署Java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古时的风筝">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://wx2.sinaimg.cn/small/0070QarDly8fm5qpcu0ljj30hs0hsgmc.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="古时的风筝">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/29/使用-Jenkins-集成部署Java/" itemprop="url">使用 Jenkins 集成部署Java</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-29T20:17:44+08:00">
+                2017-12-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/运维相关/" itemprop="url" rel="index">
+                    <span itemprop="name">运维相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            <!--noindex-->
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/29/使用-Jenkins-集成部署Java/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count hc-comment-count" data-xid="2017/12/29/使用-Jenkins-集成部署Java/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+              <!--/noindex-->
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>Jenkins 是非常流行的开源的持续集成工具。它提供了众多的插件，可以使项目构建、部署、发布自动化实现，并且部署简单，使用方便。本文以 Java 环境下的 maven 项目为背景，最后以 war 包的方式部署。</p>
+</blockquote>
+<h2 id="安装和配置"><a href="#安装和配置" class="headerlink" title="安装和配置"></a>安装和配置</h2><p>1、到官网 <a href="https://jenkins.io/download/" target="_blank" rel="noopener">https://jenkins.io/download/</a> 下载 war 包，war包自带Jetty服务器 ，只需运行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar jenkins.war  --httpPort=10000</span><br></pre></td></tr></table></figure>
+<p>就可以在 10000 端口启动 jenkins 。</p>
+<p>2、第一次启动的时候，会生成一个随机密码，如下：</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-1.png" alt="jenkins-1"></p>
+<p>3、在浏览器访问 10000 端口，出现如下界面，输入 Administrator password 密码，即上面的随机密码</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-2.png" alt="jenkins-2"></p>
+<p>4、”Continue” 之后，开始初始化，稍等片刻，出现如下界面，默认选择 “Install Suggested Plugins”即可。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-3.png" alt="jenkins-3"></p>
+<p>5、开始默认插件的安装，需要等待一段时间。安装完成后，输入用户名和密码等信息即可完成初始配置。</p>
+<p>6、进入“全局工具配置”页面，配置好 JDK、Git、Maven、Maven Configuration 。建议全部手工安装，然后手动配置。</p>
+<p>7、进入插件管理，搜索 Maven Integration plugin ，并安装，主要是为了构建 maven 项目。</p>
+<h2 id="创建持续集成项目"><a href="#创建持续集成项目" class="headerlink" title="创建持续集成项目"></a>创建持续集成项目</h2><p>进入首页，点击新建，并选择”构建一个 Maven 项目”。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-4.png" alt="jenkins-4"></p>
+<p>点击确定之后，进入项目配置页面,接下来对项目做完整配置，制定个性化的集成方案。</p>
+<h4 id="通用配置"><a href="#通用配置" class="headerlink" title="通用配置"></a>通用配置</h4><p>填写项目名称、描述等信息</p>
+<h4 id="源码管理"><a href="#源码管理" class="headerlink" title="源码管理"></a>源码管理</h4><p>以 Git 为例，可以是 GitHub 、GitLab 等代码托管系统。</p>
+<p>1、勾选 Git，先以 https 协议为例，填写 Repository URL ，即仓库地址，例如：<a href="https://github.com/username/jenkins-test.git" target="_blank" rel="noopener">https://github.com/username/jenkins-test.git</a></p>
+<p>2、添加一个证书，这里是 https 协议，增加一个账号密码类型的证书</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-5.png" alt="jenkins-5"></p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-6.png" alt="jenkins-6"></p>
+<p>3、  然后选择一个分支，默认是 master 分支。</p>
+<h4 id="构建触发器"><a href="#构建触发器" class="headerlink" title="构建触发器"></a>构建触发器</h4><blockquote>
+<p>项目除了可以手动构建之外，还可以设置触发器，jenkins 提供了几种比较有用的触发器</p>
+</blockquote>
+<h5 id="Build-whenever-a-SNAPSHOT-dependency-is-built"><a href="#Build-whenever-a-SNAPSHOT-dependency-is-built" class="headerlink" title="Build whenever a SNAPSHOT dependency is built"></a>Build whenever a SNAPSHOT dependency is built</h5><p>当 pom.xml 中的<code>&lt;dependency&gt;</code>发生了变化时，就会触发一次构建，也就是修改了maven 依赖包，比如引入了新的包、删除了之前的包、更改了包版本等。</p>
+<h5 id="触发远程构建"><a href="#触发远程构建" class="headerlink" title="触发远程构建"></a>触发远程构建</h5><p><img src="http://hexo.moonkite.cn/jenkins/jenkins-20.png" alt="jenkins-20"></p>
+<p>如果选择使用远程构建触发，在身份验证令牌这里设置好一个 token 值，可以自己随意定，之后访问 <code>JENKINS_URL</code>/job/maven-svn/build?token=<code>TOKEN_NAME</code> 或者 /buildWithParameters?token=<code>TOKEN_NAME</code>，例如我这里就可以访问 <a href="http://127.0.0.1:10000/job/maven-svn/build?token=my-jenkins-token" target="_blank" rel="noopener">http://127.0.0.1:10000/job/maven-svn/build?token=my-jenkins-token</a> </p>
+<h5 id="Build-after-other-projects-are-built"><a href="#Build-after-other-projects-are-built" class="headerlink" title="Build after other projects are built"></a>Build after other projects are built</h5><p><img src="http://hexo.moonkite.cn/jenkins/jenkins-21.png" alt="jenkins-21"></p>
+<p>当一个其他项目构建之后触发构建当前项目，可以选择是其他项目构建成功、不稳定或者失败之后触发。</p>
+<h5 id="Build-periodically"><a href="#Build-periodically" class="headerlink" title="Build periodically"></a>Build periodically</h5><p><img src="http://hexo.moonkite.cn/jenkins/jenkins-22.png" alt="jenkins-22"></p>
+<p>设置一个 Cron 表达式，例如每天固定时间、每隔几个小时、每周几等等，不管源代码是否发生了变化，都执行构建任务。如图，是每天凌晨 3 点执行。具体 Cron 参看说明即可。</p>
+<h5 id="GitHub-hook-trigger-for-GITScm-polling"><a href="#GitHub-hook-trigger-for-GITScm-polling" class="headerlink" title="GitHub hook trigger for GITScm polling"></a>GitHub hook trigger for GITScm polling</h5><p>GitHub 专用的触发器设置，需要配合 github  Webhooks 使用。</p>
+<h5 id="Poll-SCM"><a href="#Poll-SCM" class="headerlink" title="Poll SCM"></a>Poll SCM</h5><p>区别于 Build periodically ，同样是设置一个 Cron 表达式，不同的是，会检查源代码是否发生了变化，如果有变化才执行构建，否则不执行。</p>
+<h4 id="构建环境"><a href="#构建环境" class="headerlink" title="构建环境"></a>构建环境</h4><p>一般不需要更改。</p>
+<h4 id="Pre-Steps"><a href="#Pre-Steps" class="headerlink" title="Pre Steps"></a>Pre Steps</h4><p>构建之前的动作，比如构建前执行一段 <code>shell</code> 脚本。一般不用。</p>
+<h4 id="Build"><a href="#Build" class="headerlink" title="Build"></a>Build</h4><p>正式构建，因为这里是创建的 maven 项目，所以主要就是配置 Root POM 和 maven 命令。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-23.png" alt="jenkins-23"></p>
+<p>如图，意思是主 pom 文件名称为 pom.xml ,需要执行的 maven 命令是 clean package ,即先清理，再打包。</p>
+<p>点击“高级”可以设置更多的 maven 配置，具体没有用过。</p>
+<h4 id="通知配置"><a href="#通知配置" class="headerlink" title="通知配置"></a>通知配置</h4><blockquote>
+<p>系统自带的邮件配置</p>
+</blockquote>
+<p>1、进入「系统管理」- 「系统设置」。</p>
+<p>2、找到 Jenkins Location ,配置上 Jenkins URL  和 系统管理员邮件地址（即发送通知邮件的邮箱账号）</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-7.png" alt="jenkins-7"></p>
+<p>3、然后找到 邮件通知并点击高级配置，填上 SMTP 服务器、勾选使用 SMTP 认证、用户名（此用户名须和上面系统管理员邮件地址一致）和密码、勾选使用 SSL 协议。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-8.png" alt="jenkins-8"></p>
+<p>4、勾选“通过发送测试邮件测试配置”，填写需要发送测试的邮箱，可以测试一下配置是否成功。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-9.png" alt="jenkins-9"></p>
+<p>5、回到项目配置页面，勾选 “E-mail Notification”，填写通知人列表（多个邮箱用空格分隔）。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-10.png" alt="jenkins-10"></p>
+<p>到此配置完成，但是只能在构建失败时发送邮件通知，功能过于简单。下面介绍扩展插件的方式。</p>
+<blockquote>
+<p>Email Extension Plugin 配置</p>
+</blockquote>
+<p>1、到「系统管理」-「管理插件」下安装 Email Extension Plugin 插件。</p>
+<p>2、进入 「系统管理」- 「系统设置」，找到 “Extended E-mail Notification”并打开高级设置，设置好 SMTP server、勾选 Use SMTP Authentication、填写邮件发送方账号和密码、勾选 Use SSL。这些信息是必须的。另外，可以填写默认通知列表、默认内容类型格式、默认邮件主题、默认邮件内容等配置。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-11.png" alt="jenkins-11"></p>
+<p>3、回到项目配置，找到“构建后操作”，点击“增加构建后操作步骤”，选择 “Editable Email Notification”，填写邮件通知列表（逗号分隔）、Content Type、Default Subject、Default Content等内容</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-12.png" alt="jenkins-12"></p>
+<p>4、添加触发器，可以在构建前、构建成功、构建失败等多种状态下发送邮件通知。这里配置了失败和成功两种状态触发器，并且每个触发器都可独立配置通知人、邮件主题、内容等，如果配置了会覆盖上一步的默认配置。这里要注意的是，通知人默认是 Developers ,需要改成 Recipient List。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-13.png" alt="jenkins-13"></p>
+<p>5、保存配置，并构建项目，可以受到如下格式的邮件通知</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-14.png" alt="jenkins-14"></p>
+<blockquote>
+<p>集成钉钉群通知</p>
+</blockquote>
+<p>1、首先在钉钉客户端新建一个通知群，点击聊天机器人。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-15.png" alt="jenkins-15"></p>
+<p>2、选择一个自定义机器人。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-16.png" alt="jenkins-16"></p>
+<p>3、点击添加，会自动生成 webhook 地址。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-17.png" alt="jenkins-17"></p>
+<p>4、到「系统管理」-「管理插件」下安装 Dingding[钉钉] Plugin 插件。</p>
+<p>5、回到项目配置页面，增加构建后操作步骤，选择“钉钉通知器配置”，填写钉钉access token，即上一步 webhook 地址中的 access_token 参数值，并选择通知时机。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-18.png" alt="jenkins-18"></p>
+<p>6、最后构建项目，将会收到如下通知。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-19.png" alt="jenkins-19"></p>
+<h4 id="部署发布"><a href="#部署发布" class="headerlink" title="部署发布"></a>部署发布</h4><blockquote>
+<p>项目构建完成，对于整个集成部署来说，只是完成了百分之五十。剩下就是部署发布了，到了发布这一环节就需要对接其他功能或系统了。</p>
+</blockquote>
+<h5 id="Post-Steps"><a href="#Post-Steps" class="headerlink" title="Post Steps"></a>Post Steps</h5><p>构建完成之后执行的动作，可以选择只在构建成功后、构建成功或不稳定时、不管构建结果如何三种时机。</p>
+<p>例如在构建成功后，可以执行一段 shell 脚本，由此，我们可以发挥想象，通过这一段 shell 脚本能做哪些操作：</p>
+<p>1、比如通过脚本调用一个 API 接口，通过然后 API 主动下载构建好的包；</p>
+<p>2、比如通过脚本主动推送打好的包到远程待部署服务器</p>
+<p>之后，如果是简单的部署环境，例如之后两三台服务器，可以在待部署服务器上用脚本实现。</p>
+<p>如果是机器比较多的情况，可以接入 saltstack 等运维工具。</p>
+<p>如果是 docker 场景下，另有其他的实现方式。</p>
+<h4 id="部署实例"><a href="#部署实例" class="headerlink" title="部署实例"></a>部署实例</h4><blockquote>
+<p>下面结合 Publish Over SSH 和 shell 脚本完成远程部署 war 包到远程 tomcat </p>
+</blockquote>
+<p>1、到“系统管理”—&gt;“管理插件”，在可选插件中搜索 Publish Over SSH，完成安装。</p>
+<p>2、到“系统管理”—&gt;“系统设置”中，找到 Publish over SSH 设置区域，配置 ssh server 配置</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-24.png" alt="jenkins-24"></p>
+<p><strong>Passphrase</strong>：如果是秘钥登录，在使用ssh-key 创建秘钥的过程中会提示输入密码，如果输入了，这里就填写那个密码</p>
+<p><strong>Path to key</strong>：秘钥文件（私钥）在 jenkins 服务器的位置 </p>
+<p><strong>SSH Server Name</strong>：服务器名称，随意填写，帮助标示服务器</p>
+<p><strong>Hostname</strong>：需要连接 ssh 服务器 IP</p>
+<p><strong>Username</strong>：用户名</p>
+<p><strong>Remote Directory</strong>：远程目录，即发送的文件会保存到这个目录，这里就是 war 包要临时保存的位置</p>
+<p><strong>Use password authentication, or use a different key</strong>：使用密码或其他的key</p>
+<p><strong>Passphrase / Password</strong> : 密码或其他秘钥文件创建时所用的密码，这里使用的是用户名密码方式。</p>
+<p>3、配置好之后，点击 “Test Configuration” 按钮，如果提示 success 则表示配置成功，保存配置。</p>
+<p>4、回到项目配置页面，在“增加构建后操作步骤”中选择 “Send build artifacts over SSH”</p>
+<p>可以配置多个SSH Server，就是说可以把构建出来的包部署到台服务器上。</p>
+<p><img src="http://hexo.moonkite.cn/jenkins/jenkins-25.png" alt="jenkins-25"></p>
+<p><strong>Name</strong> ：选择刚刚配置的那个部署服务器</p>
+<p><strong>Transfers</strong>: 传输器，可以配置多个 Transfer Set，也就是说如果一台服务器上有多个 tomcat，可以通过不同的Transfer Set 传输，并且执行特定的命令。</p>
+<p><strong>Source files</strong>:源文件，即构建好的 war 包，这里是选择所有的 war 包。</p>
+<p><strong>Remove prefix </strong>: 要移除的路径前缀，如果 Source files 是 /target/xxx.war ，这里填写 /target 就可以在发送到部署服务器的时候，在 Remote directory 目录不创建 target 子目录，而直接将 xxx.war 发送到 Remote directory 根目录。注意：如果是多个 war 包，Remove prefix 必须是这几个 war 包所在路径共有的路径前缀（即以 Remove prefix 开始的目录）</p>
+<p><strong>Remote directory</strong>：部署服务器存放 war 包的目录，如果为空，则默认继承之前配置的路径</p>
+<p><strong>Exec command</strong>: 在部署服务器上执行的部署脚本，脚本要放在部署服务器上面。</p>
+<p>5、根据具体的环境配置等信息，写一个shell 脚本文件，即上面的 deploy.sh 。脚本要完成的内容为：先查到要部署的那个tomcat 实例的 pid ,然后 kill 掉它，接着将之前的 war 包备份一下，然后将刚刚发送过去的 war 包复制到 tomcat 的 webapps 目录下，最后调用 bin 目录下的 ./startup.sh 脚本启动 tomcat 。</p>
+<p>以上只是一个简单配置和部署过程，用与开发测试集成部署场景或者服务器很少的情况下。 </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.fengzheng.pub/2017/12/13/Hexo-github-打造个人博客/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1696,164 +1967,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.fengzheng.pub/2016/02/04/如何用Dockerfile创建镜像/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="古时的风筝">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="http://wx2.sinaimg.cn/small/0070QarDly8fm5qpcu0ljj30hs0hsgmc.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="古时的风筝">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/02/04/如何用Dockerfile创建镜像/" itemprop="url">如何用Dockerfile创建镜像</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-04T21:10:51+08:00">
-                2016-02-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Docker/" itemprop="url" rel="index">
-                    <span itemprop="name">Docker</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            <!--noindex-->
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2016/02/04/如何用Dockerfile创建镜像/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count hc-comment-count" data-xid="2016/02/04/如何用Dockerfile创建镜像/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-              <!--/noindex-->
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="创建镜像的目的"><a href="#创建镜像的目的" class="headerlink" title="创建镜像的目的"></a>创建镜像的目的</h2><p>首先说DockerHub或其它一些镜像仓库已经提供了够多的镜像，有最小版本，也有一些安装了mysql、nginx、apache等等第三方软件的版本可以直接拿来使用。虽然已经足够多了，但是有些情况下并不能满足我们的需求，例如需要安装一些比较少用到的第三方软件，这个时候只能先用公共仓库中的镜像，启动容器，然后在容器中按照我们的需求安装软件，修改配置等等操作，之后提交镜像。这些操作在之前的<a href="http://www.cnblogs.com/fengzheng/p/4958571.html" target="_blank" rel="noopener">文章</a>中介绍了。这样操作完成之后，可以用如下两种方式实现定制镜像的目的：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/02/04/如何用Dockerfile创建镜像/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1908,7 +2021,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1930,7 +2043,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
